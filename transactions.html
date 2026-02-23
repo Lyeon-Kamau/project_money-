@@ -1,0 +1,344 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - M-Pesa Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #16a34a 75%, #059669 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #16a34a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover { color: #16a34a; }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .dashboard-container {
+            padding: 2rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .dashboard-header h1 {
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .content-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .content-card h2 {
+            color: #374151;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filters input,
+        .filters select {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .filters input:focus,
+        .filters select:focus {
+            outline: none;
+            border-color: #16a34a;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(22, 163, 74, 0.1) 100%);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        tr:hover {
+            background: #f9fafb;
+        }
+        
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .badge-sent {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .badge-received {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            table { font-size: 0.875rem; }
+            th, td { padding: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="dashboard.html" class="logo">⌘ M-Pesa Tracker</a>
+        <ul class="nav-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="transactions.html">Transactions</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+        <button class="btn btn-secondary" onclick="logout()">Logout</button>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>All Transactions</h1>
+            <a href="dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
+        </div>
+
+        <div class="content-card">
+            <h2>Search & Filter</h2>
+            <div class="filters">
+                <input type="text" id="searchPerson" placeholder="Search by person..." oninput="applyFilters()">
+                <input type="date" id="startDate" onchange="applyFilters()">
+                <input type="date" id="endDate" onchange="applyFilters()">
+                <select id="typeFilter" onchange="applyFilters()">
+                    <option value="all">All Types</option>
+                    <option value="sent">Sent</option>
+                    <option value="received">Received</option>
+                </select>
+                <input type="text" id="searchCode" placeholder="Transaction code..." oninput="applyFilters()">
+                <input type="number" id="minAmount" placeholder="Min amount..." oninput="applyFilters()">
+            </div>
+            <button class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
+        </div>
+
+        <div class="content-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                <h2>Transaction List (<span id="transactionCount">0</span>)</h2>
+                <button class="btn btn-success" onclick="exportToExcel()">📥 Export</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="transactionsTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Person</th>
+                            <th>Amount (KSh)</th>
+                            <th>Code</th>
+                            <th>Balance (KSh)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 3rem; color: #6b7280;">
+                                No transactions yet. Import M-Pesa messages to get started.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var transactions = [];
+        var filteredTransactions = [];
+
+        window.onload = function() {
+            checkAuth();
+            loadTransactions();
+            updateTransactionsTable();
+        };
+
+        function checkAuth() {
+            var saved = localStorage.getItem('mpesa_current_user');
+            if (!saved) {
+                alert('Please login first');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('mpesa_current_user');
+            window.location.href = 'index.html';
+        }
+
+        function loadTransactions() {
+            var saved = localStorage.getItem('mpesa_transactions');
+            if (saved) {
+                transactions = JSON.parse(saved);
+                filteredTransactions = transactions.slice();
+            }
+        }
+
+        function updateTransactionsTable() {
+            var tbody = document.getElementById('transactionsBody');
+            document.getElementById('transactionCount').textContent = filteredTransactions.length;
+            
+            if (filteredTransactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 3rem; color: #6b7280;">No transactions found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filteredTransactions.map(function(t) {
+                return '<tr>' +
+                    '<td>' + t.date + '</td>' +
+                    '<td><span class="badge badge-' + t.type + '">' + (t.type.charAt(0).toUpperCase() + t.type.slice(1)) + '</span></td>' +
+                    '<td>' + t.person + '</td>' +
+                    '<td>' + t.amount.toFixed(2) + '</td>' +
+                    '<td>' + (t.code || '-') + '</td>' +
+                    '<td>' + (t.balance ? t.balance.toFixed(2) : '-') + '</td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        function applyFilters() {
+            var person = document.getElementById('searchPerson').value.toLowerCase();
+            var startDate = document.getElementById('startDate').value;
+            var endDate = document.getElementById('endDate').value;
+            var type = document.getElementById('typeFilter').value;
+            var code = document.getElementById('searchCode').value.toUpperCase();
+            var minAmount = parseFloat(document.getElementById('minAmount').value) || 0;
+            
+            filteredTransactions = transactions.filter(function(t) {
+                if (person && t.person.toLowerCase().indexOf(person) === -1) return false;
+                if (startDate && t.date < startDate) return false;
+                if (endDate && t.date > endDate) return false;
+                if (type !== 'all' && t.type !== type) return false;
+                if (code && (!t.code || t.code.indexOf(code) === -1)) return false;
+                if (minAmount && t.amount < minAmount) return false;
+                return true;
+            });
+            
+            updateTransactionsTable();
+        }
+
+        function clearFilters() {
+            document.getElementById('searchPerson').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('typeFilter').value = 'all';
+            document.getElementById('searchCode').value = '';
+            document.getElementById('minAmount').value = '';
+            filteredTransactions = transactions.slice();
+            updateTransactionsTable();
+        }
+
+        function exportToExcel() {
+            if (filteredTransactions.length === 0) {
+                alert('No transactions to export');
+                return;
+            }
+            
+            var data = filteredTransactions.map(function(t) {
+                return {
+                    'Date': t.date,
+                    'Type': t.type.charAt(0).toUpperCase() + t.type.slice(1),
+                    'Person': t.person,
+                    'Amount (KSh)': t.amount.toFixed(2),
+                    'Transaction Code': t.code || 'N/A',
+                    'Balance (KSh)': t.balance ? t.balance.toFixed(2) : 'N/A'
+                };
+            });
+            
+            var ws = XLSX.utils.json_to_sheet(data);
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
+            
+            XLSX.writeFile(wb, 'mpesa_transactions_' + new Date().toISOString().split('T')[0] + '.xlsx');
+        }
+    </script>
+</body>
+</html>

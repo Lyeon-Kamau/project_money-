@@ -1,0 +1,477 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up - M-Pesa Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #16a34a 75%, #059669 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #16a34a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+        
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding: 2rem;
+        }
+        
+        .auth-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1000px;
+            width: 100%;
+        }
+        
+        .auth-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        
+        .auth-box h2 {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        
+        .auth-box .subtitle {
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #16a34a;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-register {
+            background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+        }
+        
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(22, 163, 74, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        .btn-secondary:hover {
+            background: #d1d5db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Test OTP Panel */
+        .test-panel {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f3f4f6;
+            border-radius: 8px;
+            border-left: 4px solid #16a34a;
+        }
+        
+        .test-panel h4 {
+            color: #059669;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .test-panel p {
+            font-size: 0.85rem;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+        
+        .test-otp-display {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #059669;
+            border: 1px dashed #059669;
+            text-align: center;
+            margin: 0.5rem 0;
+        }
+        
+        .dev-note {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        
+        .divider {
+            display: none;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #6b7280;
+            position: relative;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #e5e7eb;
+        }
+        
+        .divider::before {
+            left: 0;
+        }
+        
+        .divider::after {
+            right: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .auth-wrapper {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .auth-box {
+                padding: 2rem;
+            }
+            
+            .divider {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">⌘ Mikooh's M-Pesa Tracker</a>
+    </nav>
+
+    <div class="auth-container">
+        <div class="auth-wrapper">
+            <!-- Login Box with OTP -->
+            <div class="auth-box">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Login with your phone number</p>
+                
+                <!-- Step 1: Enter Phone Number -->
+                <form id="phoneForm" onsubmit="sendOTP(event)">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="loginPhone" required placeholder="07XXXXXXXX" pattern="[0-9]{10}" maxlength="10">
+                        <small style="color: #6b7280;">Enter your 10-digit phone number</small>
+                    </div>
+                    <button type="submit" class="btn btn-login" id="sendOtpBtn">Send OTP</button>
+                </form>
+
+                <!-- Step 2: Enter OTP (Hidden by default) -->
+                <form id="otpForm" onsubmit="verifyOTP(event)" style="display: none;">
+                    <div class="form-group">
+                        <label>Enter OTP Code</label>
+                        <input type="text" id="otpCode" required placeholder="Enter 6-digit code" pattern="[0-9]{6}" maxlength="6">
+                        <small style="color: #6b7280;">Check your phone for the code</small>
+                    </div>
+                    
+                    <!-- Test Panel - Shows OTP for demo purposes -->
+                    <div class="test-panel">
+                        <h4>🔧 Test Mode - OTP Received</h4>
+                        <p>Your test OTP code is:</p>
+                        <div class="test-otp-display" id="testOtpDisplay">------</div>
+                        <p style="font-size: 0.8rem; color: #6b7280;">This panel is for testing. In production, this code would be sent via SMS.</p>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-login">Verify & Login</button>
+                    <button type="button" class="btn btn-secondary" onclick="backToPhone()" style="margin-top: 0.5rem;">Back</button>
+                </form>
+            </div>
+
+            <!-- Register Box -->
+            <div class="auth-box">
+                <h2>Create Account</h2>
+                <p class="subtitle">Sign up to get started</p>
+                
+                <!-- Test User Info -->
+                <div class="dev-note">
+                    <strong>📱 Test Account:</strong> Use 0712345678 to login (password not needed for OTP)
+                </div>
+                
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="registerPhone" required placeholder="07XXXXXXXX" pattern="[0-9]{10}" maxlength="10">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="registerEmail" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="registerPassword" required placeholder="At least 6 characters" minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-register">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Storage keys
+            const STORAGE_USERS = 'mpesa_users';
+            const STORAGE_CURRENT_USER = 'mpesa_current_user';
+
+            // State variables
+            var generatedOTP = null;
+            var loginPhoneNumber = null;
+
+            // Initialize with a test user
+            function initTestUser() {
+                let users = JSON.parse(localStorage.getItem(STORAGE_USERS) || '[]');
+                // Add a test user if none exists
+                if (users.length === 0) {
+                    const testUser = {
+                        name: 'John Mikooh',
+                        phone: '0712345678',
+                        email: 'john@example.com',
+                        password: 'password123',
+                        createdAt: new Date().toISOString()
+                    };
+                    users.push(testUser);
+                    localStorage.setItem(STORAGE_USERS, JSON.stringify(users));
+                }
+            }
+            initTestUser();
+
+            // --- SEND OTP ---
+            window.sendOTP = function(e) {
+                e.preventDefault();
+                var phone = document.getElementById('loginPhone').value;
+
+                // Check if phone number is registered
+                var users = JSON.parse(localStorage.getItem(STORAGE_USERS) || '[]');
+                var user = users.find(function(u) { return u.phone === phone; });
+
+                if (!user) {
+                    alert('❌ Phone number not registered. Please sign up first.\n\nTest account: 0712345678');
+                    return;
+                }
+
+                // Generate 6-digit OTP
+                generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+                loginPhoneNumber = phone;
+
+                // Show OTP form, hide phone form
+                document.getElementById('phoneForm').style.display = 'none';
+                document.getElementById('otpForm').style.display = 'block';
+                
+                // Display the OTP in the test panel
+                document.getElementById('testOtpDisplay').textContent = generatedOTP;
+                
+                // Show a simple notification
+                alert('📱 OTP Sent! Check the test panel below for your code.');
+
+                // Auto-expire OTP after 5 minutes
+                setTimeout(function() {
+                    if (generatedOTP) {
+                        generatedOTP = null;
+                        loginPhoneNumber = null;
+                        // Only alert if the OTP form is still visible
+                        if (document.getElementById('otpForm').style.display === 'block') {
+                            alert('⏰ OTP expired. Please request a new one.');
+                            backToPhone();
+                        }
+                    }
+                }, 300000); // 5 minutes
+            };
+
+            // --- VERIFY OTP ---
+            window.verifyOTP = function(e) {
+                e.preventDefault();
+                var enteredOTP = document.getElementById('otpCode').value;
+
+                if (generatedOTP && enteredOTP === generatedOTP) {
+                    // OTP is correct, log user in
+                    var users = JSON.parse(localStorage.getItem(STORAGE_USERS) || '[]');
+                    var user = users.find(function(u) { return u.phone === loginPhoneNumber; });
+
+                    if (user) {
+                        localStorage.setItem(STORAGE_CURRENT_USER, JSON.stringify(user));
+                        alert('✅ Login successful! Welcome back, ' + user.name);
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        alert('Error: User not found.');
+                        backToPhone();
+                    }
+                } else {
+                    alert('❌ Invalid OTP code. Please try again.');
+                    document.getElementById('otpCode').value = '';
+                }
+            };
+
+            // --- BACK TO PHONE ENTRY ---
+            window.backToPhone = function() {
+                document.getElementById('phoneForm').style.display = 'block';
+                document.getElementById('otpForm').style.display = 'none';
+                // Clear inputs
+                document.getElementById('loginPhone').value = '';
+                document.getElementById('otpCode').value = '';
+                document.getElementById('testOtpDisplay').textContent = '------';
+                // Clear OTP state
+                generatedOTP = null;
+                loginPhoneNumber = null;
+            };
+
+            // --- REGISTER NEW USER ---
+            window.handleRegister = function(e) {
+                e.preventDefault();
+                var name = document.getElementById('registerName').value.trim();
+                var phone = document.getElementById('registerPhone').value.trim();
+                var email = document.getElementById('registerEmail').value.trim();
+                var password = document.getElementById('registerPassword').value;
+
+                // Basic validation
+                if (!name || !phone || !email || !password) {
+                    alert('All fields are required.');
+                    return;
+                }
+
+                var users = JSON.parse(localStorage.getItem(STORAGE_USERS) || '[]');
+
+                // Check if phone or email already exists
+                var phoneExists = users.find(function(u) { return u.phone === phone; });
+                var emailExists = users.find(function(u) { return u.email === email; });
+
+                if (phoneExists) {
+                    alert('Phone number already registered. Please login instead.');
+                    return;
+                }
+
+                if (emailExists) {
+                    alert('Email already registered. Please use a different email.');
+                    return;
+                }
+
+                // Create new user
+                var newUser = { 
+                    name: name,
+                    phone: phone,
+                    email: email, 
+                    password: password,
+                    createdAt: new Date().toISOString()
+                };
+                users.push(newUser);
+                localStorage.setItem(STORAGE_USERS, JSON.stringify(users));
+
+                alert('✅ Registration successful! You can now login with your phone number.');
+
+                // Clear registration form
+                document.getElementById('registerName').value = '';
+                document.getElementById('registerPhone').value = '';
+                document.getElementById('registerEmail').value = '';
+                document.getElementById('registerPassword').value = '';
+
+                // Auto-fill login phone
+                document.getElementById('loginPhone').value = phone;
+            };
+
+            // Instructions for testing
+            console.log('🔧 TESTING INSTRUCTIONS:');
+            console.log('1. Use phone: 0712345678');
+            console.log('2. Click "Send OTP"');
+            console.log('3. Get the OTP code from the test panel that appears');
+            console.log('4. Enter the code and click "Verify & Login"');
+        })();
+    </script>
+</body>
+</html>
