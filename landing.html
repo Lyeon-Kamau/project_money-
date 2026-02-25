@@ -1,437 +1,246 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Sign Up - M-Pesa Tracker</title>
-    
-    <!-- EmailJS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #16a34a 75%, #059669 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #16a34a 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-decoration: none;
-        }
-        
-        .auth-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex: 1;
-            padding: 2rem;
-        }
-        
-        .auth-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            max-width: 1000px;
-            width: 100%;
-        }
-        
-        .auth-box {
-            background: white;
-            padding: 3rem;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-        }
-        
-        .auth-box h2 {
-            text-align: center;
-            margin-bottom: 0.5rem;
-            color: #374151;
-        }
-        
-        .auth-box .subtitle {
-            text-align: center;
-            color: #6b7280;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #374151;
-            font-weight: 500;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #16a34a;
-        }
-        
-        .form-group small {
-            color: #6b7280;
-            font-size: 0.875rem;
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            color: white;
-        }
-        
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        .btn-login {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .btn-login:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn-register {
-            background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
-        }
-        
-        .btn-register:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(22, 163, 74, 0.3);
-        }
-        
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #374151;
-            margin-top: 0.5rem;
-        }
-        
-        .status-message {
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            text-align: center;
-            font-size: 0.875rem;
-            display: none;
-        }
-        
-        .status-message.success {
-            background: #dcfce7;
-            color: #166534;
-            display: block;
-        }
-        
-        .status-message.error {
-            background: #fee2e2;
-            color: #991b1b;
-            display: block;
-        }
-        
-        .status-message.info {
-            background: #dbeafe;
-            color: #1e40af;
-            display: block;
-        }
-        
-        @media (max-width: 768px) {
-            .auth-wrapper {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .auth-box {
-                padding: 2rem;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<title>M-Pesa Tracker | Smarter Financial Control</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    overflow-x:hidden;
+    background: linear-gradient(-45deg,#16a34a,#059669,#10b981,#3b82f6);
+    background-size:400% 400%;
+    animation: gradientMove 12s ease infinite;
+    color:white;
+}
+
+@keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+/* Floating Background Glow */
+.bg-circle{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(120px);
+    opacity:0.4;
+    z-index:0;
+    animation:float 20s infinite alternate ease-in-out;
+}
+
+.circle1{
+    width:400px;
+    height:400px;
+    background:#22c55e;
+    top:-100px;
+    left:-100px;
+}
+
+.circle2{
+    width:350px;
+    height:350px;
+    background:#3b82f6;
+    bottom:-100px;
+    right:-100px;
+}
+
+@keyframes float{
+    from{transform:translateY(0px);}
+    to{transform:translateY(80px);}
+}
+
+section{
+    padding:120px 10%;
+    position:relative;
+    z-index:2;
+}
+
+.navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:1.5rem 10%;
+    position:fixed;
+    width:100%;
+    top:0;
+    background:rgba(0,0,0,0.2);
+    backdrop-filter:blur(10px);
+    z-index:10;
+}
+
+.logo{
+    font-size:1.8rem;
+    font-weight:bold;
+}
+
+.nav-btn{
+    background:white;
+    color:#16a34a;
+    padding:0.7rem 1.5rem;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.nav-btn:hover{
+    transform:translateY(-3px);
+}
+
+/* Hero */
+.hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+.hero h1{
+    font-size:3rem;
+    margin-bottom:1rem;
+}
+
+.hero p{
+    max-width:700px;
+    font-size:1.2rem;
+    opacity:0.9;
+    margin-bottom:2rem;
+}
+
+.btn-main{
+    background:white;
+    color:#16a34a;
+    padding:1rem 2rem;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.btn-main:hover{
+    transform:scale(1.05);
+}
+
+/* Scroll Reveal */
+.reveal{
+    opacity:0;
+    transform:translateY(60px);
+    transition:all 1s ease;
+}
+
+.reveal.active{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* Content Sections */
+.content-box{
+    background:white;
+    color:#374151;
+    padding:3rem;
+    border-radius:16px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.2);
+}
+
+.content-box h2{
+    color:#16a34a;
+    margin-bottom:1rem;
+}
+
+.content-box p{
+    line-height:1.6;
+    margin-bottom:1rem;
+}
+
+@media(max-width:768px){
+    .hero h1{font-size:2rem;}
+}
+</style>
 </head>
+
 <body>
-    <nav class="navbar">
-        <a href="index.html" class="logo">⌘ Mikooh's M-Pesa Tracker</a>
-    </nav>
 
-    <div class="auth-container">
-        <div class="auth-wrapper">
-            <!-- Login Box with OTP -->
-            <div class="auth-box">
-                <h2>Welcome Back</h2>
-                <p class="subtitle">Login with your email</p>
-                
-                <!-- Step 1: Enter Email -->
-                <form id="emailForm" onsubmit="sendOTP(event)">
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="loginEmail" required placeholder="your@email.com">
-                        <small>We'll send a verification code to this email</small>
-                    </div>
-                    <button type="submit" class="btn btn-login" id="sendOtpBtn">Send OTP Code</button>
-                    <div id="loginStatus" class="status-message"></div>
-                </form>
+<div class="bg-circle circle1"></div>
+<div class="bg-circle circle2"></div>
 
-                <!-- Step 2: Enter OTP (Hidden by default) -->
-                <form id="otpForm" onsubmit="verifyOTP(event)" style="display: none;">
-                    <div class="form-group">
-                        <label>Enter OTP Code</label>
-                        <input type="text" id="otpCode" required placeholder="Enter 6-digit code" pattern="[0-9]{6}" maxlength="6">
-                        <small>Check your email inbox for the code</small>
-                    </div>
-                    <button type="submit" class="btn btn-login" id="verifyBtn">Verify & Login</button>
-                    <button type="button" class="btn btn-secondary" onclick="backToEmail()">Back</button>
-                    <div id="otpStatus" class="status-message"></div>
-                </form>
-            </div>
+<nav class="navbar">
+    <div class="logo">⌘ M-Pesa Tracker</div>
+    <a href="login.html" class="nav-btn">Login</a>
+</nav>
 
-            <!-- Register Box -->
-            <div class="auth-box">
-                <h2>Create Account</h2>
-                <p class="subtitle">Sign up to get started</p>
-                <form onsubmit="handleRegister(event)">
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="registerName">
-                    </div>
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="tel" id="registerPhone" required placeholder="07XXXXXXXX" pattern="[0-9]{10}" maxlength="10">
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="registerEmail" required placeholder=>
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="registerPassword" required placeholder="At least 6 characters" minlength="6">
-                    </div>
-                    <button type="submit" class="btn btn-register" id="registerBtn">Sign Up</button>
-                    <div id="registerStatus" class="status-message"></div>
-                </form>
-            </div>
-        </div>
+<section class="hero">
+    <h1>Track Your M-Pesa Transactions From Anywhere</h1>
+    <p>
+        A secure financial tracking system that lets you log in using your phone number,
+        import your M-Pesa SMS messages, and automatically analyze your spending and income.
+    </p>
+    <a href="login.html" class="btn-main">Get Started</a>
+</section>
+
+<section class="reveal">
+    <div class="content-box">
+        <h2>What We Do</h2>
+        <p>
+            Our system reads your M-Pesa transaction messages and converts them into structured financial data.
+        </p>
+        <p>
+            Instead of manually checking SMS messages, you get a full dashboard showing:
+            Total Sent, Total Received, Net Balance, and Full Transaction History.
+        </p>
     </div>
+</section>
 
-    <script>
-        // Initialize EmailJS with public key
-        emailjs.init("YOUR_PUBLIC_KEY"); // ← You'll replace this
-        
-        var generatedOTP = null;
-        var loginEmail = null;
-        var otpExpiry = null;
+<section class="reveal">
+    <div class="content-box">
+        <h2>How It Works</h2>
+        <p><strong>1.</strong> Login securely using your phone number (OTP authentication).</p>
+        <p><strong>2.</strong> Import SMS messages or upload transaction files.</p>
+        <p><strong>3.</strong> Our system automatically detects sent & received transactions.</p>
+        <p><strong>4.</strong> View analytics and export reports anytime.</p>
+    </div>
+</section>
 
-        // Send OTP via Email
-        function sendOTP(e) {
-            e.preventDefault();
-            var email = document.getElementById('loginEmail').value;
-            var statusDiv = document.getElementById('loginStatus');
-            var btn = document.getElementById('sendOtpBtn');
-            
-            // Check if email is registered
-            var users = JSON.parse(localStorage.getItem('mpesa_users') || '[]');
-            var user = users.find(function(u) { return u.email === email; });
-            
-            if (!user) {
-                statusDiv.className = 'status-message error';
-                statusDiv.textContent = 'Email not registered. Please sign up first.';
-                return;
-            }
-            
-            // Generate 6-digit OTP
-            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-            loginEmail = email;
-            otpExpiry = Date.now() + (5 * 60 * 1000); // 5 minutes
-            
-            // Disable button and show loading
-            btn.disabled = true;
-            btn.textContent = 'Sending...';
-            statusDiv.className = 'status-message info';
-            statusDiv.textContent = 'Sending OTP to your email...';
-            
-            // Send email using EmailJS
-            var templateParams = {
-                to_email: email,
-                to_name: user.name,
-                otp_code: generatedOTP,
-                app_name: "Mikooh's M-Pesa Tracker"
-            };
-            
-            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
-                .then(function(response) {
-                    statusDiv.className = 'status-message success';
-                    statusDiv.textContent = '✅ OTP sent! Check your email inbox.';
-                    
-                    // Show OTP form after 2 seconds
-                    setTimeout(function() {
-                        document.getElementById('emailForm').style.display = 'none';
-                        document.getElementById('otpForm').style.display = 'block';
-                    }, 2000);
-                }, function(error) {
-                    // If EmailJS fails, show OTP in alert (fallback for demo)
-                    console.error('EmailJS Error:', error);
-                    alert('Demo Mode: Your OTP is ' + generatedOTP + '\n\n(Email service not configured yet)');
-                    statusDiv.className = 'status-message success';
-                    statusDiv.textContent = 'OTP generated! (Check alert for demo)';
-                    
-                    setTimeout(function() {
-                        document.getElementById('emailForm').style.display = 'none';
-                        document.getElementById('otpForm').style.display = 'block';
-                    }, 1500);
-                })
-                .finally(function() {
-                    btn.disabled = false;
-                    btn.textContent = 'Send OTP Code';
-                });
+<section class="reveal">
+    <div class="content-box">
+        <h2>Why It Matters</h2>
+        <p>
+            Financial awareness leads to better financial decisions.
+            By centralizing your M-Pesa data, you gain clarity, control, and smarter tracking of your money.
+        </p>
+    </div>
+</section>
+
+<script>
+
+/* Scroll Reveal Effect */
+const reveals = document.querySelectorAll(".reveal");
+
+function revealOnScroll(){
+    reveals.forEach(element=>{
+        const windowHeight = window.innerHeight;
+        const elementTop = element.getBoundingClientRect().top;
+        const revealPoint = 100;
+
+        if(elementTop < windowHeight - revealPoint){
+            element.classList.add("active");
         }
+    });
+}
 
-        // Verify OTP
-        function verifyOTP(e) {
-            e.preventDefault();
-            var enteredOTP = document.getElementById('otpCode').value;
-            var statusDiv = document.getElementById('otpStatus');
-            var btn = document.getElementById('verifyBtn');
-            
-            // Check if OTP expired
-            if (Date.now() > otpExpiry) {
-                statusDiv.className = 'status-message error';
-                statusDiv.textContent = 'OTP expired. Please request a new one.';
-                setTimeout(backToEmail, 2000);
-                return;
-            }
-            
-            if (enteredOTP === generatedOTP) {
-                // OTP is correct
-                statusDiv.className = 'status-message success';
-                statusDiv.textContent = '✅ Verified! Logging you in...';
-                btn.disabled = true;
-                
-                var users = JSON.parse(localStorage.getItem('mpesa_users') || '[]');
-                var user = users.find(function(u) { return u.email === loginEmail; });
-                
-                if (user) {
-                    localStorage.setItem('mpesa_current_user', JSON.stringify(user));
-                    setTimeout(function() {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
-                }
-            } else {
-                statusDiv.className = 'status-message error';
-                statusDiv.textContent = '❌ Invalid OTP. Please try again.';
-                document.getElementById('otpCode').value = '';
-            }
-        }
+window.addEventListener("scroll", revealOnScroll);
 
-        // Go back to email entry
-        function backToEmail() {
-            document.getElementById('emailForm').style.display = 'block';
-            document.getElementById('otpForm').style.display = 'none';
-            document.getElementById('loginEmail').value = '';
-            document.getElementById('otpCode').value = '';
-            document.getElementById('loginStatus').className = 'status-message';
-            document.getElementById('otpStatus').className = 'status-message';
-            generatedOTP = null;
-            loginEmail = null;
-            otpExpiry = null;
-        }
+</script>
 
-        // Register new user
-        function handleRegister(e) {
-            e.preventDefault();
-            var name = document.getElementById('registerName').value;
-            var phone = document.getElementById('registerPhone').value;
-            var email = document.getElementById('registerEmail').value;
-            var password = document.getElementById('registerPassword').value;
-            var statusDiv = document.getElementById('registerStatus');
-            var btn = document.getElementById('registerBtn');
-            
-            var users = JSON.parse(localStorage.getItem('mpesa_users') || '[]');
-            
-            // Check if phone or email already exists
-            var phoneExists = users.find(function(u) { return u.phone === phone; });
-            var emailExists = users.find(function(u) { return u.email === email; });
-            
-            if (phoneExists) {
-                statusDiv.className = 'status-message error';
-                statusDiv.textContent = 'Phone number already registered.';
-                return;
-            }
-            
-            if (emailExists) {
-                statusDiv.className = 'status-message error';
-                statusDiv.textContent = 'Email already registered.';
-                return;
-            }
-            
-            btn.disabled = true;
-            btn.textContent = 'Creating account...';
-            
-            // Create new user
-            var newUser = { 
-                name: name,
-                phone: phone,
-                email: email, 
-                password: password,
-                createdAt: new Date().toISOString()
-            };
-            users.push(newUser);
-            localStorage.setItem('mpesa_users', JSON.stringify(users));
-            
-            statusDiv.className = 'status-message success';
-            statusDiv.textContent = '✅ Account created! You can now login.';
-            
-            // Clear form
-            document.getElementById('registerName').value = '';
-            document.getElementById('registerPhone').value = '';
-            document.getElementById('registerEmail').value = '';
-            document.getElementById('registerPassword').value = '';
-            
-            // Auto-fill login email
-            document.getElementById('loginEmail').value = email;
-            
-            btn.disabled = false;
-            btn.textContent = 'Sign Up';
-        }
-    </script>
 </body>
 </html>
