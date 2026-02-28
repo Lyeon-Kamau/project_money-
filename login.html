@@ -47,8 +47,6 @@
       position: relative;
       overflow: hidden;
     }
-
-    /* Forms */
     .form-wrapper {
       position: absolute;
       top: 0;
@@ -61,50 +59,42 @@
       background: white;
       transition: all 0.6s ease-in-out;
     }
-
     .form-wrapper.sign-in {
       left: 0;
       transform: translateX(0);
       opacity: 1;
       z-index: 2;
     }
-
     .form-wrapper.sign-up {
       right: 0;
       transform: translateX(100%);
       opacity: 0;
       z-index: 1;
     }
-
     .wrapper.right-panel-active .form-wrapper.sign-in {
       transform: translateX(-100%);
       opacity: 0;
       z-index: 1;
     }
-
     .wrapper.right-panel-active .form-wrapper.sign-up {
       transform: translateX(0);
       opacity: 1;
       z-index: 2;
     }
-
     form {
       width: 100%;
       max-width: 380px;
     }
-
     h2 {
       font-size: 2.5rem;
       font-weight: 700;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       color: #1f2937;
       text-align: center;
     }
-
     .input-group {
       margin-bottom: 20px;
     }
-
     label {
       display: block;
       margin-bottom: 8px;
@@ -112,7 +102,6 @@
       color: #374151;
       font-size: 0.95rem;
     }
-
     .phone-input {
       display: flex;
       border: 2px solid #e5e7eb;
@@ -120,12 +109,10 @@
       overflow: hidden;
       transition: all 0.3s ease;
     }
-
     .phone-input:focus-within {
       border-color: #16a34a;
       box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
     }
-
     .phone-prefix {
       background: #f3f4f6;
       padding: 15px 20px;
@@ -133,7 +120,6 @@
       color: #16a34a;
       border-right: 2px solid #e5e7eb;
     }
-
     .phone-input input {
       flex: 1;
       border: none;
@@ -141,7 +127,6 @@
       font-size: 1rem;
       outline: none;
     }
-
     input[type="text"],
     input[type="email"],
     input[type="password"] {
@@ -152,13 +137,11 @@
       font-size: 1rem;
       transition: all 0.3s ease;
     }
-
     input:focus {
       border-color: #16a34a;
       box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
       outline: none;
     }
-
     .btn {
       width: 100%;
       padding: 15px;
@@ -170,49 +153,47 @@
       transition: all 0.3s ease;
       margin-top: 20px;
     }
-
     .btn-login {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
     }
-
     .btn-register {
       background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
       color: white;
       box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);
     }
-
     .btn:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     }
-
     .terms {
       margin: 20px 0;
       font-size: 0.9rem;
       color: #6b7280;
     }
-
     .terms a {
       color: #16a34a;
       text-decoration: none;
       font-weight: 600;
     }
-
     .terms label {
       display: flex;
       align-items: center;
       gap: 10px;
       cursor: pointer;
     }
-
     .terms input[type="checkbox"] {
       width: 18px;
       height: 18px;
       accent-color: #16a34a;
     }
-
+    .demo-note {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
     /* Overlay */
     .overlay-wrapper {
       position: absolute;
@@ -224,11 +205,9 @@
       transition: transform 0.6s ease-in-out;
       z-index: 10;
     }
-
     .wrapper.right-panel-active .overlay-wrapper {
       transform: translateX(-100%);
     }
-
     .overlay {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #16a34a 100%);
       color: white;
@@ -239,11 +218,9 @@
       transform: translateX(0);
       transition: transform 0.6s ease-in-out;
     }
-
     .wrapper.right-panel-active .overlay {
       transform: translateX(50%);
     }
-
     .overlay-panel {
       position: absolute;
       display: flex;
@@ -257,38 +234,31 @@
       padding: 0 50px;
       transition: transform 0.6s ease-in-out;
     }
-
     .overlay-left {
       right: 0;
       transform: translateX(0);
     }
-
     .overlay-right {
       left: 0;
       transform: translateX(-100%);
     }
-
     .wrapper.right-panel-active .overlay-left {
       transform: translateX(100%);
     }
-
     .wrapper.right-panel-active .overlay-right {
       transform: translateX(0);
     }
-
     .overlay h1 {
       font-size: 2.2rem;
       font-weight: 700;
       margin-bottom: 20px;
     }
-
     .overlay p {
       font-size: 1.1rem;
       margin-bottom: 30px;
       line-height: 1.6;
       opacity: 0.95;
     }
-
     .overlay-btn {
       padding: 15px 50px;
       background: transparent;
@@ -300,14 +270,12 @@
       cursor: pointer;
       transition: all 0.3s ease;
     }
-
     .overlay-btn:hover {
       background: white;
       color: #16a34a;
       transform: translateY(-3px);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     }
-
     /* Mobile */
     @media (max-width: 768px) {
       .wrapper {
@@ -343,7 +311,6 @@
   </style>
 </head>
 <body>
-
   <nav class="navbar">
     <a href="#" class="logo">⌘ Mikooh's M-Pesa Tracker</a>
   </nav>
@@ -359,11 +326,11 @@
             <label>Phone Number</label>
             <div class="phone-input">
               <span class="phone-prefix">+254</span>
-              <input type="tel" id="loginPhone" pattern="[0-9]{9}" maxlength="9" required>
+              <input type="tel" id="loginPhone" placeholder="712345678" pattern="[0-9]{9}" maxlength="9" required>
             </div>
           </div>
-          <button type="submit" class="btn btn-login" onclick="handleLogin(event)">Sign In</button>
-          <div class="demo-note" style="text-align:center; margin-top:15px; font-size:0.85rem; color:#9ca3af;">
+          <button type="submit" class="btn btn-login" onclick="handleLogin(event)">Send OTP</button>
+          <div class="demo-note">
             Demo: OTP will be shown in alert
           </div>
         </form>
@@ -373,12 +340,10 @@
       <div class="form-wrapper sign-up">
         <form id="signupForm">
           <h2>Create Account</h2>
-
           <div class="input-group">
             <label>Full Name</label>
             <input type="text" id="registerName" required>
           </div>
-
           <div class="input-group">
             <label>Phone Number</label>
             <div class="phone-input">
@@ -386,18 +351,19 @@
               <input type="tel" id="registerPhone" pattern="[0-9]{9}" maxlength="9" required>
             </div>
           </div>
-
           <div class="input-group">
-            <label>Email</label>
-            <input type="email" id="registerEmail" required>
+            <label>Email Address</label>
+            <input type="email" id="registerEmail"required>
           </div>
-
           <div class="input-group">
             <label>Password</label>
-            <input type="password" id="registerPassword" minlength="8" required>
+            <input type="password" id="registerPassword" placeholder="At least 8 characters" minlength="8" required>
           </div>
-
-          <button type="submit" class="btn btn-register" onclick="handleRegister(event)">Sign Up</button>
+          
+          <button type="submit" class="btn btn-register" onclick="handleRegister(event)">Create Account</button>
+          <div class="demo-note" style="margin-top: 12px;">
+            Demo mode – no real account is created
+          </div>
         </form>
       </div>
 
@@ -407,12 +373,12 @@
           <div class="overlay-panel overlay-left">
             <h1>New Here?</h1>
             <p>Sign up and start tracking your M-Pesa transactions today!</p>
-            <button class="overlay-btn" onclick="togglePanel()">Sign In</button>
+            <button class="overlay-btn" onclick="togglePanel()">Sign Up</button>
           </div>
           <div class="overlay-panel overlay-right">
-            <h1>Already a member</h1>
+            <h1>Already a member?</h1>
             <p>Login to continue tracking your M-Pesa transactions!</p>
-            <button class="overlay-btn" onclick="togglePanel()">Sign Up</button>
+            <button class="overlay-btn" onclick="togglePanel()">Sign In</button>
           </div>
         </div>
       </div>
@@ -433,7 +399,6 @@
 
     function togglePanel() {
       wrapper.classList.toggle('right-panel-active');
-
       if (wrapper.classList.contains('right-panel-active')) {
         mobileSignInToggle.style.display = 'none';
         mobileSignUpToggle.style.display = 'block';
@@ -453,31 +418,60 @@
       e.preventDefault();
       const phoneInput = document.getElementById('loginPhone').value.trim();
       const phone = normalizePhone(phoneInput);
+
       if (!phone) {
         alert('Please enter a valid 9-digit Kenyan number (e.g., 712345678)');
         return;
       }
+
       const otp = Math.floor(100000 + Math.random() * 900000);
       alert(`Demo OTP: ${otp}\n\nIn production, this would be sent to ${phone}`);
     }
 
     function handleRegister(e) {
       e.preventDefault();
+
       const name = document.getElementById('registerName').value.trim();
       const phoneInput = document.getElementById('registerPhone').value.trim();
       const email = document.getElementById('registerEmail').value.trim();
       const password = document.getElementById('registerPassword').value;
+
       const phone = normalizePhone(phoneInput);
 
-      if (!name || !phone || !email.includes('@') || password.length < 8) {
-        alert('Please fill all fields correctly');
+      if (!name) {
+        alert('Please enter your full name');
+        return;
+      }
+      if (!phone) {
+        alert('Please enter a valid 9-digit Kenyan number');
+        return;
+      }
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address');
+        return;
+      }
+      if (password.length < 8) {
+        alert('Password must be at least 8 characters long');
         return;
       }
 
-      alert(`Registration successful!\nName: ${name}\nPhone: ${phone}\nEmail: ${email}`);
+      // Fake successful registration + demo OTP
+      const fakeOTP = Math.floor(100000 + Math.random() * 900000);
+
+      alert(
+        "Registration successful!\n\n" +
+        "Welcome, " + name + "!\n" +
+        "You can now sign in with your phone number.\n\n" +
+        "Demo OTP (use this to log in right now): " + fakeOTP +
+        "\n\n(In real version this would be sent via SMS)"
+      );
+
+      // Auto-fill login phone and switch to login view
+      document.getElementById('loginPhone').value = phoneInput;
+      wrapper.classList.remove('right-panel-active');
     }
 
-    // Start with sign-in visible
+    // Initialize - show sign in panel
     wrapper.classList.remove('right-panel-active');
     mobileSignInToggle.style.display = 'block';
     mobileSignUpToggle.style.display = 'none';
