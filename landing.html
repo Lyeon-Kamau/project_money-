@@ -13,56 +13,46 @@
     font-family:'Segoe UI',sans-serif;
 }
 
+/* =========================
+   BACKGROUND IMAGE SECTION
+   ========================= */
+
 body{
     overflow-x:hidden;
-    background: linear-gradient(-45deg,#16a34a,#059669,#10b981,#3b82f6);
-    background-size:400% 400%;
-    animation: gradientMove 12s ease infinite;
     color:white;
-}
-
-@keyframes gradientMove{
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
-}
-
-/* Floating Background Glow */
-.bg-circle{
-    position:absolute;
-    border-radius:50%;
-    filter:blur(120px);
-    opacity:0.4;
-    z-index:0;
-    animation:float 20s infinite alternate ease-in-out;
-}
-
-.circle1{
-    width:400px;
-    height:400px;
-    background:#22c55e;
-    top:-100px;
-    left:-100px;
-}
-
-.circle2{
-    width:350px;
-    height:350px;
-    background:#3b82f6;
-    bottom:-100px;
-    right:-100px;
-}
-
-@keyframes float{
-    from{transform:translateY(0px);}
-    to{transform:translateY(80px);}
-}
-
-section{
-    padding:120px 10%;
     position:relative;
-    z-index:2;
 }
+
+/* PUT YOUR BACKGROUND IMAGE HERE */
+body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background-image:url("images/transaction.jpg"); /* <-- ADD IMAGE PATH HERE */
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+    z-index:-2;
+}
+
+/* Dark overlay for readability */
+body::after{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    z-index:-1;
+}
+
+/* =========================
+   NAVBAR
+   ========================= */
 
 .navbar{
     display:flex;
@@ -72,7 +62,7 @@ section{
     position:fixed;
     width:100%;
     top:0;
-    background:rgba(0,0,0,0.2);
+    background:rgba(0,0,0,0.4);
     backdrop-filter:blur(10px);
     z-index:10;
 }
@@ -80,11 +70,14 @@ section{
 .logo{
     font-size:1.8rem;
     font-weight:bold;
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
 }
 
 .nav-btn{
-    background:white;
-    color:#16a34a;
+    background:#16a34a;
+    color:white;
     padding:0.7rem 1.5rem;
     border-radius:8px;
     text-decoration:none;
@@ -96,61 +89,104 @@ section{
     transform:translateY(-3px);
 }
 
-/* Hero */
+/* =========================
+   HERO SECTION
+   ========================= */
+
+section{
+    padding:120px 10%;
+    transition:0.6s ease;
+}
+
 .hero{
     min-height:100vh;
     display:flex;
-    flex-direction:column;
-    justify-content:center;
     align-items:center;
-    text-align:center;
+    justify-content:space-between;
+    gap:60px;
+}
+
+.hero-left{
+    flex:1;
+    max-width:600px;
+}
+
+.hero-icon{
+    width:50px;
+    height:50px;
+    background:rgba(22,163,74,0.2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    margin-bottom:20px;
+    font-weight:bold;
 }
 
 .hero h1{
-    font-size:3rem;
-    margin-bottom:1rem;
+    font-size:3.5rem;
+    line-height:1.2;
+    margin-bottom:1.5rem;
 }
 
 .hero p{
-    max-width:700px;
-    font-size:1.2rem;
+    font-size:1.1rem;
     opacity:0.9;
     margin-bottom:2rem;
+    line-height:1.6;
 }
 
 .btn-main{
-    background:white;
-    color:#16a34a;
+    background:#16a34a;
+    color:white;
     padding:1rem 2rem;
     border-radius:10px;
     text-decoration:none;
     font-weight:600;
     transition:0.3s;
+    display:inline-block;
 }
 
 .btn-main:hover{
     transform:scale(1.05);
 }
 
-/* Scroll Reveal */
-.reveal{
-    opacity:0;
-    transform:translateY(60px);
-    transition:all 1s ease;
+/* HERO IMAGE SPACE */
+.hero-right{
+    flex:1;
+    display:flex;
+    justify-content:center;
 }
 
-.reveal.active{
-    opacity:1;
-    transform:translateY(0);
+/* PLACEHOLDER FOR DASHBOARD IMAGE */
+.image-placeholder{
+    width:380px;
+    height:500px;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.9rem;
+    border:1px solid rgba(255,255,255,0.2);
+    transition:0.5s;
 }
 
-/* Content Sections */
+.image-placeholder:hover{
+    transform:translateY(-10px);
+}
+
+/* =========================
+   CONTENT SECTIONS
+   ========================= */
+
 .content-box{
-    background:white;
-    color:#374151;
+    background:rgba(99, 101, 230, 0.747);
+    color:#e9ebee;
     padding:3rem;
     border-radius:16px;
-    box-shadow:0 20px 50px rgba(0,0,0,0.2);
+    box-shadow:0 20px 50px rgba(0,0,0,0.3);
 }
 
 .content-box h2{
@@ -163,16 +199,28 @@ section{
     margin-bottom:1rem;
 }
 
-@media(max-width:768px){
-    .hero h1{font-size:2rem;}
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media(max-width:900px){
+    .hero{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .hero-right{
+        margin-top:40px;
+    }
+
+    .hero h1{
+        font-size:2.5rem;
+    }
 }
 </style>
 </head>
 
 <body>
-
-<div class="bg-circle circle1"></div>
-<div class="bg-circle circle2"></div>
 
 <nav class="navbar">
     <div class="logo">⌘ M-Pesa Tracker</div>
@@ -180,65 +228,85 @@ section{
 </nav>
 
 <section class="hero">
-    <h1>Track Your M-Pesa Transactions From Anywhere</h1>
-    <p>
-        A secure financial tracking system that lets you log in using your phone number,
-        import your M-Pesa SMS messages, and automatically analyze your spending and income.
-    </p>
-    <a href="login.html" class="btn-main">Get Started</a>
+    <div class="hero-left">
+        
+
+        <h1>
+            Effortless M-Pesa Tracking,<br>
+            Simplified
+        </h1>
+
+        <p>
+            Monitor transactions, apply smart filters, and gain secure financial insights —
+            all in one centralized dashboard. Log in securely using your phone number
+            and track your M-Pesa transactions from anywhere.
+        </p>
+
+        <a href="login.html" class="btn-main">Get Started</a>
+    </div>
+
+    <div class="hero-right">
+        <div class="image-placeholder">
+            <img src="images/dashboard_1.jpg" 
+         style="width:400px;border-radius:20px;">
+        </div>
+    </div>
 </section>
 
-<section class="reveal">
+<section>
     <div class="content-box">
         <h2>What We Do</h2>
         <p>
             Our system reads your M-Pesa transaction messages and converts them into structured financial data.
         </p>
         <p>
-            Instead of manually checking SMS messages, you get a full dashboard showing:
-            Total Sent, Total Received, Net Balance, and Full Transaction History.
+            Instead of manually reviewing SMS messages, you get a smart dashboard showing total sent,
+            total received, net balance, and full transaction history.
         </p>
     </div>
 </section>
 
-<section class="reveal">
+<section>
     <div class="content-box">
         <h2>How It Works</h2>
         <p><strong>1.</strong> Login securely using your phone number (OTP authentication).</p>
         <p><strong>2.</strong> Import SMS messages or upload transaction files.</p>
-        <p><strong>3.</strong> Our system automatically detects sent & received transactions.</p>
+        <p><strong>3.</strong> Transactions are automatically categorized.</p>
         <p><strong>4.</strong> View analytics and export reports anytime.</p>
     </div>
 </section>
 
-<section class="reveal">
+<section>
     <div class="content-box">
         <h2>Why It Matters</h2>
         <p>
-            Financial awareness leads to better financial decisions.
-            By centralizing your M-Pesa data, you gain clarity, control, and smarter tracking of your money.
+            Financial awareness leads to smarter decisions. By centralizing your M-Pesa data,
+            you gain clarity, control, and confidence over your money.
         </p>
     </div>
 </section>
 
 <script>
 
-/* Scroll Reveal Effect */
-const reveals = document.querySelectorAll(".reveal");
+/* Scroll Focus Effect */
+const sections = document.querySelectorAll("section");
 
-function revealOnScroll(){
-    reveals.forEach(element=>{
+function focusSection(){
+    sections.forEach(sec=>{
+        const rect = sec.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        const elementTop = element.getBoundingClientRect().top;
-        const revealPoint = 100;
 
-        if(elementTop < windowHeight - revealPoint){
-            element.classList.add("active");
+        if(rect.top < windowHeight/2 && rect.bottom > windowHeight/3){
+            sec.style.transform = "scale(1)";
+            sec.style.opacity = "1";
+        } else {
+            sec.style.transform = "scale(0.96)";
+            sec.style.opacity = "0.7";
         }
     });
 }
 
-window.addEventListener("scroll", revealOnScroll);
+window.addEventListener("scroll", focusSection);
 
 </script>
 
