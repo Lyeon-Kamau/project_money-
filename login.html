@@ -359,7 +359,7 @@
             <label>Phone Number</label>
             <div class="phone-input">
               <span class="phone-prefix">+254</span>
-              <input type="tel" id="loginPhone" placeholder="712345678" pattern="[0-9]{9}" maxlength="9" required>
+              <input type="tel" id="loginPhone" pattern="[0-9]{9}" maxlength="9" required>
             </div>
           </div>
           <button type="submit" class="btn btn-login" onclick="handleLogin(event)">Sign In</button>
@@ -395,12 +395,6 @@
           <div class="input-group">
             <label>Password</label>
             <input type="password" id="registerPassword" minlength="8" required>
-          </div>
-
-          <div class="terms">
-            <label>
-              <input type="checkbox" required> I agree to the <a href="#">Terms</a> & <a href="#">Privacy Policy</a>
-            </label>
           </div>
 
           <button type="submit" class="btn btn-register" onclick="handleRegister(event)">Sign Up</button>
