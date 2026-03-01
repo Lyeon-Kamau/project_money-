@@ -180,9 +180,9 @@
       box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);
     }
     .btn-otp {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
       color: white;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);
     }
     .btn:hover {
       transform: translateY(-3px);
@@ -200,9 +200,7 @@
       color: #667eea;
       font-weight: 600;
     }
-    .back-link:hover span {
-      text-decoration: underline;
-    }
+    .back-link:hover span { text-decoration: underline; }
     .demo-note {
       text-align: center;
       margin-top: 15px;
@@ -220,12 +218,8 @@
       text-align: center;
       display: none;
     }
-
-    /* Step views inside sign-in panel */
     .step { display: none; width: 100%; }
     .step.active { display: block; }
-
-    /* Overlay */
     .overlay-wrapper {
       position: absolute;
       top: 0;
@@ -236,9 +230,7 @@
       transition: transform 0.6s ease-in-out;
       z-index: 10;
     }
-    .wrapper.right-panel-active .overlay-wrapper {
-      transform: translateX(-100%);
-    }
+    .wrapper.right-panel-active .overlay-wrapper { transform: translateX(-100%); }
     .overlay {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #16a34a 100%);
       color: white;
@@ -249,9 +241,7 @@
       transform: translateX(0);
       transition: transform 0.6s ease-in-out;
     }
-    .wrapper.right-panel-active .overlay {
-      transform: translateX(50%);
-    }
+    .wrapper.right-panel-active .overlay { transform: translateX(50%); }
     .overlay-panel {
       position: absolute;
       display: flex;
@@ -265,31 +255,12 @@
       padding: 0 50px;
       transition: transform 0.6s ease-in-out;
     }
-    .overlay-left {
-      right: 0;
-      transform: translateX(0);
-    }
-    .overlay-right {
-      left: 0;
-      transform: translateX(-100%);
-    }
-    .wrapper.right-panel-active .overlay-left {
-      transform: translateX(100%);
-    }
-    .wrapper.right-panel-active .overlay-right {
-      transform: translateX(0);
-    }
-    .overlay h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-    }
-    .overlay p {
-      font-size: 1.1rem;
-      margin-bottom: 30px;
-      line-height: 1.6;
-      opacity: 0.95;
-    }
+    .overlay-left { right: 0; transform: translateX(0); }
+    .overlay-right { left: 0; transform: translateX(-100%); }
+    .wrapper.right-panel-active .overlay-left { transform: translateX(100%); }
+    .wrapper.right-panel-active .overlay-right { transform: translateX(0); }
+    .overlay h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 20px; }
+    .overlay p { font-size: 1.1rem; margin-bottom: 30px; line-height: 1.6; opacity: 0.95; }
     .overlay-btn {
       padding: 15px 50px;
       background: transparent;
@@ -307,8 +278,6 @@
       transform: translateY(-3px);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     }
-
-    /* Mobile */
     @media (max-width: 768px) {
       .wrapper { min-height: 650px; }
       .form-wrapper { width: 100%; padding: 30px; }
@@ -319,12 +288,7 @@
         margin-top: 25px;
         color: #6b7280;
       }
-      .mobile-toggle a {
-        color: #16a34a;
-        font-weight: 700;
-        text-decoration: none;
-        cursor: pointer;
-      }
+      .mobile-toggle a { color: #16a34a; font-weight: 700; text-decoration: none; cursor: pointer; }
       .wrapper.right-panel-active .form-wrapper.sign-in { display: none; }
       .form-wrapper.sign-up { transform: translateX(0); opacity: 1; }
     }
@@ -338,7 +302,7 @@
   <div class="auth-container">
     <div class="wrapper" id="wrapper">
 
-      <!-- Sign In Panel (has 2 steps) -->
+      <!-- Sign In Panel -->
       <div class="form-wrapper sign-in">
 
         <!-- STEP 1: Enter phone -->
@@ -445,7 +409,6 @@
         mobileSignInToggle.style.display = 'block';
         mobileSignUpToggle.style.display = 'none';
       }
-      // Reset to step 1 when toggling
       showStep('step-phone');
     }
 
@@ -470,10 +433,7 @@
         return;
       }
 
-      // Generate demo OTP
       currentOTP = Math.floor(100000 + Math.random() * 900000).toString();
-
-      // Show OTP step
       document.getElementById('otpSubtitle').textContent = `We sent a 6-digit code to ${phone}`;
       document.getElementById('demoOtpHint').textContent = `Demo OTP: ${currentOTP}`;
       showStep('step-otp');
@@ -484,9 +444,12 @@
       const entered = document.getElementById('otpInput').value.trim();
 
       if (entered === currentOTP) {
-        alert('✅ Login successful! Redirecting to your dashboard...');
-        // TODO: redirect to dashboard page
-        // window.location.href = 'dashboard.html';
+        // Save user session
+        const phone = normalizePhone(document.getElementById('loginPhone').value.trim());
+        localStorage.setItem('mpesa_current_user', JSON.stringify({ name: 'User', phone: phone }));
+        
+        // Redirect to dashboard
+        window.location.href = 'dashboard.html';
       } else {
         alert('❌ Incorrect OTP. Please try again.');
         document.getElementById('otpInput').value = '';
@@ -518,14 +481,11 @@
       mobileSignInToggle.style.display = 'block';
       mobileSignUpToggle.style.display = 'none';
 
-      // Pre-fill phone and show success message
       document.getElementById('loginPhone').value = phoneInput;
       const msg = document.getElementById('loginSuccessMsg');
       msg.textContent = `✅ Account created for ${name}! Please log in below.`;
       msg.style.display = 'block';
 
-      // Reset signup form
-      document.getElementById('signupForm') && document.getElementById('signupForm').reset?.();
       showStep('step-phone');
     }
 
