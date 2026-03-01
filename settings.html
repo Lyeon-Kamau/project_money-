@@ -1,446 +1,325 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - M-Pesa Tracker</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #16a34a 75%, #059669 100%);
-            min-height: 100vh;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #064e3b 100%);
-        }
-        
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode .navbar {
-            background: rgba(30, 41, 59, 0.95);
-        }
-        
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #16a34a 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-        
-        .nav-links a {
-            text-decoration: none;
-            color: #374151;
-            font-weight: 500;
-        }
-        
-        .nav-links a:hover { color: #16a34a; }
-        
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: white;
-            color: #374151;
-            border: 2px solid #e5e7eb;
-        }
-        
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-        
-        .dashboard-container {
-            padding: 2rem 5%;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        
-        .dashboard-header h1 {
-            color: white;
-            font-size: 2rem;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode .dashboard-header h1 {
-            color: #e2e8f0;
-        }
-        
-        .content-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode .content-card {
-            background: #1e293b;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        
-        .settings-section {
-            margin-bottom: 2rem;
-        }
-        
-        .settings-section h3 {
-            color: #374151;
-            margin-bottom: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode .settings-section h3 {
-            color: #e2e8f0;
-        }
-        
-        .setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode .setting-item {
-            border-color: #334155;
-            background: #0f172a;
-        }
-        
-        .setting-item strong {
-            color: #374151;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode .setting-item strong {
-            color: #e2e8f0;
-        }
-        
-        .setting-item p {
-            color: #6b7280;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode .setting-item p {
-            color: #94a3b8;
-        }
-        
-        /* Dark Mode Toggle Switch */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-        
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .slider {
-            background-color: #16a34a;
-        }
-        
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-        
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .setting-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings - M-Pesa Tracker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #16a34a 75%, #059669 100%);
+    min-height: 100vh;
+}
+
+.navbar {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #16a34a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+}
+
+.nav-links a:hover { color: #16a34a; }
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+    color: white;
+}
+
+.btn-secondary {
+    background: white;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+}
+
+.dashboard-container {
+    padding: 2rem 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.dashboard-header h1 {
+    color: white;
+    font-size: 2rem;
+}
+
+.content-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section h3 {
+    color: #374151;
+    margin-bottom: 1rem;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.setting-item strong {
+    color: #374151;
+}
+
+.setting-item p {
+    color: #6b7280;
+}
+
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+</style>
 </head>
+
 <body>
-    <nav class="navbar">
-        <a href="dashboard.html" class="logo">⌘ M-Pesa Tracker</a>
-        <ul class="nav-links">
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="transactions.html">Transactions</a></li>
-            <li><a href="settings.html">Settings</a></li>
-        </ul>
-        <button class="btn btn-secondary" onclick="logout()">Logout</button>
-    </nav>
 
-    <div class="dashboard-container">
-        <div class="dashboard-header">
-            <h1>Settings</h1>
-            <a href="dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
-        </div>
+<nav class="navbar">
+    <a href="dashboard.html" class="logo">⌘ M-Pesa Tracker</a>
+    <ul class="nav-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="transactions.html">Transactions</a></li>
+        <li><a href="settings.html">Settings</a></li>
+    </ul>
+    <button class="btn btn-secondary" onclick="logout()">Logout</button>
+</nav>
 
-        <div class="content-card">
-            <div class="settings-section">
-                <h3>Appearance</h3>
-                <div class="setting-item">
-                    <div>
-                        <strong>Dark Mode</strong>
-                        <p style="font-size: 0.875rem;">Switch between light and dark theme</p>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>Account Information</h3>
-                <div class="setting-item">
-                    <div>
-                        <strong>Name</strong>
-                        <p style="color: #6b7280; font-size: 0.875rem;" id="settingsName">-</p>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div>
-                        <strong>Email</strong>
-                        <p style="color: #6b7280; font-size: 0.875rem;" id="settingsEmail">-</p>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div>
-                        <strong>Member Since</strong>
-                        <p style="color: #6b7280; font-size: 0.875rem;" id="settingsMemberSince">-</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>Transaction Statistics</h3>
-                <div class="setting-item">
-                    <div>
-                        <strong>Total Transactions</strong>
-                        <p style="color: #6b7280; font-size: 0.875rem;" id="statsTotal">0</p>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div>
-                        <strong>Total Amount Sent</strong>
-                        <p style="color: #dc2626; font-size: 0.875rem; font-weight: 600;" id="statsSent">KSh 0.00</p>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div>
-                        <strong>Total Amount Received</strong>
-                        <p style="color: #16a34a; font-size: 0.875rem; font-weight: 600;" id="statsReceived">KSh 0.00</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>Data Management</h3>
-                <div class="setting-item">
-                    <div>
-                        <strong>Export All Data</strong>
-                        <p style="color: #6b7280; font-size: 0.875rem;">Download all your transactions as Excel</p>
-                    </div>
-                    <button class="btn btn-success" onclick="exportToExcel()">📥 Export</button>
-                </div>
-                <div class="setting-item">
-                    <div>
-                        <strong>Clear All Data</strong>
-                        <p style="color: #6b7280; font-size: 0.875rem;">Delete all transactions permanently (cannot be undone)</p>
-                    </div>
-                    <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear Data</button>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>Account Actions</h3>
-                <button class="btn btn-secondary" onclick="logout()">Logout</button>
-            </div>
-        </div>
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Settings</h1>
+        <a href="dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
     </div>
 
-    <script>
-        var currentUser = null;
-        var transactions = [];
+    <div class="content-card">
 
-        window.onload = function() {
-            checkAuth();
-            loadTransactions();
-            updateSettings();
-            loadDarkMode();
-        };
+        <div class="settings-section">
+            <h3>Account Information</h3>
 
-        function checkAuth() {
-            var saved = localStorage.getItem('mpesa_current_user');
-            if (!saved) {
-                alert('Please login first');
-                window.location.href = 'login.html';
-                return;
-            }
-            currentUser = JSON.parse(saved);
-        }
+            <div class="setting-item">
+                <div>
+                    <strong>Name</strong>
+                    <p id="settingsName">-</p>
+                </div>
+            </div>
 
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('mpesa_current_user');
-                window.location.href = 'index.html';
-            }
-        }
+            <div class="setting-item">
+                <div>
+                    <strong>Email</strong>
+                    <p id="settingsEmail">-</p>
+                </div>
+            </div>
 
-        function loadTransactions() {
-            var saved = localStorage.getItem('mpesa_transactions');
-            if (saved) {
-                transactions = JSON.parse(saved);
-            }
-        }
+            <div class="setting-item">
+                <div>
+                    <strong>Member Since</strong>
+                    <p id="settingsMemberSince">-</p>
+                </div>
+            </div>
+        </div>
 
-        function updateSettings() {
-            document.getElementById('settingsName').textContent = currentUser.name;
-            document.getElementById('settingsEmail').textContent = currentUser.email;
-            
-            if (currentUser.createdAt) {
-                var date = new Date(currentUser.createdAt);
-                document.getElementById('settingsMemberSince').textContent = date.toLocaleDateString();
-            }
+        <div class="settings-section">
+            <h3>Transaction Statistics</h3>
 
-            var totalSent = transactions
-                .filter(function(t) { return t.type === 'sent'; })
-                .reduce(function(sum, t) { return sum + t.amount; }, 0);
-            var totalReceived = transactions
-                .filter(function(t) { return t.type === 'received'; })
-                .reduce(function(sum, t) { return sum + t.amount; }, 0);
+            <div class="setting-item">
+                <div>
+                    <strong>Total Transactions</strong>
+                    <p id="statsTotal">0</p>
+                </div>
+            </div>
 
-            document.getElementById('statsTotal').textContent = transactions.length + ' transactions';
-            document.getElementById('statsSent').textContent = 'KSh ' + totalSent.toFixed(2);
-            document.getElementById('statsReceived').textContent = 'KSh ' + totalReceived.toFixed(2);
-        }
+            <div class="setting-item">
+                <div>
+                    <strong>Total Amount Sent</strong>
+                    <p id="statsSent" style="color:#dc2626;font-weight:600;">KSh 0.00</p>
+                </div>
+            </div>
 
-        // Dark Mode Functions
-        function toggleDarkMode() {
-            var isDarkMode = document.getElementById('darkModeToggle').checked;
-            
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode');
-                localStorage.setItem('darkMode', 'enabled');
-            } else {
-                document.body.classList.remove('dark-mode');
-                localStorage.setItem('darkMode', 'disabled');
-            }
-        }
+            <div class="setting-item">
+                <div>
+                    <strong>Total Amount Received</strong>
+                    <p id="statsReceived" style="color:#16a34a;font-weight:600;">KSh 0.00</p>
+                </div>
+            </div>
+        </div>
 
-        function loadDarkMode() {
-            var darkMode = localStorage.getItem('darkMode');
-            
-            if (darkMode === 'enabled') {
-                document.body.classList.add('dark-mode');
-                document.getElementById('darkModeToggle').checked = true;
-            }
-        }
+        <div class="settings-section">
+            <h3>Data Management</h3>
 
-        function exportToExcel() {
-            if (transactions.length === 0) {
-                alert('No transactions to export');
-                return;
-            }
-            
-            var data = transactions.map(function(t) {
-                return {
-                    'Date': t.date,
-                    'Type': t.type.charAt(0).toUpperCase() + t.type.slice(1),
-                    'Person': t.person,
-                    'Amount (KSh)': t.amount.toFixed(2),
-                    'Transaction Code': t.code || 'N/A',
-                    'Balance (KSh)': t.balance ? t.balance.toFixed(2) : 'N/A'
-                };
-            });
-            
-            var ws = XLSX.utils.json_to_sheet(data);
-            var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
-            
-            XLSX.writeFile(wb, 'mpesa_export_' + new Date().toISOString().split('T')[0] + '.xlsx');
-            alert('Data exported successfully!');
-        }
+            <div class="setting-item">
+                <div>
+                    <strong>Export All Data</strong>
+                    <p style="font-size:0.875rem;">Download all your transactions as Excel</p>
+                </div>
+                <button class="btn btn-success" onclick="exportToExcel()">📥 Export</button>
+            </div>
 
-        function clearAllData() {
-            if (confirm('Are you sure you want to clear ALL transaction data? This action cannot be undone!')) {
-                if (confirm('This will permanently delete ' + transactions.length + ' transactions. Continue?')) {
-                    localStorage.removeItem('mpesa_transactions');
-                    transactions = [];
-                    alert('All data cleared successfully');
-                    updateSettings();
-                }
-            }
-        }
-    </script>
+            <div class="setting-item">
+                <div>
+                    <strong>Clear All Data</strong>
+                    <p style="font-size:0.875rem;">Delete all transactions permanently</p>
+                </div>
+                <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear Data</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+var currentUser = null;
+var transactions = [];
+
+window.onload = function() {
+    loadUserIfExists();
+    loadTransactions();
+    updateSettings();
+};
+
+function loadUserIfExists() {
+    var saved = localStorage.getItem('mpesa_current_user');
+    currentUser = saved ? JSON.parse(saved) : null;
+}
+
+function logout() {
+    if (!localStorage.getItem('mpesa_current_user')) {
+        alert('You are not logged in.');
+        return;
+    }
+
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('mpesa_current_user');
+        window.location.href = 'index.html';
+    }
+}
+
+function loadTransactions() {
+    var saved = localStorage.getItem('mpesa_transactions');
+    transactions = saved ? JSON.parse(saved) : [];
+}
+
+function updateSettings() {
+    if (currentUser) {
+        document.getElementById('settingsName').textContent = currentUser.name || '-';
+        document.getElementById('settingsEmail').textContent = currentUser.email || '-';
+        document.getElementById('settingsMemberSince').textContent =
+            currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString() : '-';
+    } else {
+        document.getElementById('settingsName').textContent = 'Guest';
+        document.getElementById('settingsEmail').textContent = 'Not logged in';
+        document.getElementById('settingsMemberSince').textContent = '-';
+    }
+
+    var totalSent = transactions.filter(t => t.type === 'sent')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    var totalReceived = transactions.filter(t => t.type === 'received')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    document.getElementById('statsTotal').textContent = transactions.length + ' transactions';
+    document.getElementById('statsSent').textContent = 'KSh ' + totalSent.toFixed(2);
+    document.getElementById('statsReceived').textContent = 'KSh ' + totalReceived.toFixed(2);
+}
+
+function exportToExcel() {
+    if (transactions.length === 0) {
+        alert('No transactions to export');
+        return;
+    }
+
+    var data = transactions.map(t => ({
+        'Date': t.date,
+        'Type': t.type,
+        'Person': t.person,
+        'Amount (KSh)': Number(t.amount).toFixed(2)
+    }));
+
+    var ws = XLSX.utils.json_to_sheet(data);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
+    XLSX.writeFile(wb, 'mpesa_export.xlsx');
+}
+
+function clearAllData() {
+    if (transactions.length === 0) {
+        alert('No data to clear.');
+        return;
+    }
+
+    if (confirm('Are you sure you want to delete all transactions?')) {
+        localStorage.removeItem('mpesa_transactions');
+        transactions = [];
+        updateSettings();
+        alert('All data cleared successfully.');
+    }
+}
+</script>
+
 </body>
 </html>
