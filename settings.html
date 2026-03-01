@@ -229,6 +229,13 @@ body {
                 <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear Data</button>
             </div>
         </div>
+        <div class="settings-section">
+    <h3>User Feedback</h3>
+    <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+        <textarea id="userFeedback" rows="4" placeholder="Share your feedback here..."></textarea>
+        <button class="btn btn-success" onclick="submitFeedback()">Submit Feedback</button>
+    </div>
+</div>
 
     </div>
 </div>
@@ -320,6 +327,28 @@ function clearAllData() {
         alert('All data cleared successfully.');
     }
 }
+
+function submitFeedback() {
+    var feedback = document.getElementById('userFeedback').value.trim();
+    if (!feedback) {
+        alert('Please enter your feedback before submitting.');
+        return;
+    }
+
+    var allFeedback = JSON.parse(localStorage.getItem('mpesa_feedback') || '[]');
+    var feedbackEntry = {
+        user: currentUser ? currentUser.name : 'Guest',
+        email: currentUser ? currentUser.email : '',
+        message: feedback,
+        date: new Date().toISOString()
+    };
+    allFeedback.push(feedbackEntry);
+    localStorage.setItem('mpesa_feedback', JSON.stringify(allFeedback));
+
+    alert('Thank you for your feedback!');
+    document.getElementById('userFeedback').value = '';
+}
+
 </script>
 
 </body>
