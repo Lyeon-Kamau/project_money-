@@ -86,11 +86,18 @@
       max-width: 380px;
     }
     h2 {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       font-weight: 700;
       margin-bottom: 20px;
       color: #1f2937;
       text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      color: #6b7280;
+      margin-bottom: 25px;
+      font-size: 0.95rem;
+      line-height: 1.5;
     }
     .input-group {
       margin-bottom: 20px;
@@ -129,7 +136,8 @@
     }
     input[type="text"],
     input[type="email"],
-    input[type="password"] {
+    input[type="password"],
+    input[type="number"] {
       width: 100%;
       padding: 15px;
       border: 2px solid #e5e7eb;
@@ -141,6 +149,13 @@
       border-color: #16a34a;
       box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
       outline: none;
+    }
+    .otp-input {
+      text-align: center;
+      font-size: 2rem !important;
+      font-weight: 700;
+      letter-spacing: 8px;
+      color: #1f2937;
     }
     .btn {
       width: 100%;
@@ -163,30 +178,29 @@
       color: white;
       box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);
     }
+    .btn-otp {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
     .btn:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     }
-    .terms {
-      margin: 20px 0;
-      font-size: 0.9rem;
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 15px;
       color: #6b7280;
-    }
-    .terms a {
-      color: #16a34a;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .terms label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-size: 0.9rem;
       cursor: pointer;
     }
-    .terms input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: #16a34a;
+    .back-link span {
+      color: #667eea;
+      font-weight: 600;
+    }
+    .back-link:hover span {
+      text-decoration: underline;
     }
     .demo-note {
       text-align: center;
@@ -194,6 +208,22 @@
       font-size: 0.85rem;
       color: #9ca3af;
     }
+    .success-msg {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #15803d;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      text-align: center;
+      display: none;
+    }
+
+    /* Step views inside sign-in panel */
+    .step { display: none; width: 100%; }
+    .step.active { display: block; }
+
     /* Overlay */
     .overlay-wrapper {
       position: absolute;
@@ -276,18 +306,12 @@
       transform: translateY(-3px);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     }
+
     /* Mobile */
     @media (max-width: 768px) {
-      .wrapper {
-        min-height: 650px;
-      }
-      .form-wrapper {
-        width: 100%;
-        padding: 30px;
-      }
-      .overlay-wrapper {
-        display: none;
-      }
+      .wrapper { min-height: 650px; }
+      .form-wrapper { width: 100%; padding: 30px; }
+      .overlay-wrapper { display: none; }
       .mobile-toggle {
         display: block;
         text-align: center;
@@ -300,13 +324,8 @@
         text-decoration: none;
         cursor: pointer;
       }
-      .wrapper.right-panel-active .form-wrapper.sign-in {
-        display: none;
-      }
-      .form-wrapper.sign-up {
-        transform: translateX(0);
-        opacity: 1;
-      }
+      .wrapper.right-panel-active .form-wrapper.sign-in { display: none; }
+      .form-wrapper.sign-up { transform: translateX(0); opacity: 1; }
     }
   </style>
 </head>
@@ -318,27 +337,47 @@
   <div class="auth-container">
     <div class="wrapper" id="wrapper">
 
-      <!-- Sign In Form -->
+      <!-- Sign In Panel (has 2 steps) -->
       <div class="form-wrapper sign-in">
-        <form id="signinForm">
-          <h2>Welcome Back</h2>
-          <div class="input-group">
-            <label>Phone Number</label>
-            <div class="phone-input">
-              <span class="phone-prefix">+254</span>
-              <input type="tel" id="loginPhone" placeholder="712345678" pattern="[0-9]{9}" maxlength="9" required>
+
+        <!-- STEP 1: Enter phone -->
+        <div class="step active" id="step-phone">
+          <form onsubmit="handleSendOTP(event)">
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Enter your phone number and we'll send you an OTP to log in.</p>
+            <div id="loginSuccessMsg" class="success-msg"></div>
+            <div class="input-group">
+              <label>Phone Number</label>
+              <div class="phone-input">
+                <span class="phone-prefix">+254</span>
+                <input type="tel" id="loginPhone" placeholder="712345678" pattern="[0-9]{9}" maxlength="9" required>
+              </div>
             </div>
-          </div>
-          <button type="submit" class="btn btn-login" onclick="handleLogin(event)">Send OTP</button>
-          <div class="demo-note">
-            Demo: OTP will be shown in alert
-          </div>
-        </form>
+            <button type="submit" class="btn btn-login">Send OTP</button>
+            <div class="demo-note">A 6-digit code will be sent to your number</div>
+          </form>
+        </div>
+
+        <!-- STEP 2: Enter OTP -->
+        <div class="step" id="step-otp">
+          <form onsubmit="handleVerifyOTP(event)">
+            <h2>Enter OTP</h2>
+            <p class="subtitle" id="otpSubtitle">We sent a 6-digit code to your number.</p>
+            <div class="input-group">
+              <label>OTP Code</label>
+              <input type="number" id="otpInput" class="otp-input" placeholder="------" maxlength="6" required>
+            </div>
+            <button type="submit" class="btn btn-otp">Verify & Login</button>
+            <div class="back-link" onclick="goBackToPhone()">← <span>Change phone number</span></div>
+            <div class="demo-note" id="demoOtpHint"></div>
+          </form>
+        </div>
+
       </div>
 
       <!-- Sign Up Form -->
       <div class="form-wrapper sign-up">
-        <form id="signupForm">
+        <form onsubmit="handleRegister(event)">
           <h2>Create Account</h2>
           <div class="input-group">
             <label>Full Name</label>
@@ -353,17 +392,14 @@
           </div>
           <div class="input-group">
             <label>Email Address</label>
-            <input type="email" id="registerEmail"required>
+            <input type="email" id="registerEmail" required>
           </div>
           <div class="input-group">
             <label>Password</label>
             <input type="password" id="registerPassword" placeholder="At least 8 characters" minlength="8" required>
           </div>
-          
-          <button type="submit" class="btn btn-register" onclick="handleRegister(event)">Create Account</button>
-          <div class="demo-note" style="margin-top: 12px;">
-            Demo mode – no real account is created
-          </div>
+          <button type="submit" class="btn btn-register">Create Account</button>
+          <div class="demo-note" style="margin-top: 12px;">Demo mode – no real account is created</div>
         </form>
       </div>
 
@@ -373,12 +409,12 @@
           <div class="overlay-panel overlay-left">
             <h1>New Here?</h1>
             <p>Sign up and start tracking your M-Pesa transactions today!</p>
-            <button class="overlay-btn" onclick="togglePanel()">Sign In</button>
+            <button class="overlay-btn" onclick="togglePanel()">Sign Up</button>
           </div>
           <div class="overlay-panel overlay-right">
             <h1>Already a member?</h1>
             <p>Login to continue tracking your M-Pesa transactions!</p>
-            <button class="overlay-btn" onclick="togglePanel()">Sign Up</button>
+            <button class="overlay-btn" onclick="togglePanel()">Sign In</button>
           </div>
         </div>
       </div>
@@ -397,6 +433,8 @@
     const mobileSignInToggle = document.querySelector('.sign-in-toggle');
     const mobileSignUpToggle = document.querySelector('.sign-up-toggle');
 
+    let currentOTP = null;
+
     function togglePanel() {
       wrapper.classList.toggle('right-panel-active');
       if (wrapper.classList.contains('right-panel-active')) {
@@ -406,6 +444,8 @@
         mobileSignInToggle.style.display = 'block';
         mobileSignUpToggle.style.display = 'none';
       }
+      // Reset to step 1 when toggling
+      showStep('step-phone');
     }
 
     function normalizePhone(input) {
@@ -414,7 +454,12 @@
       return digits.length === 9 ? '+254' + digits : null;
     }
 
-    function handleLogin(e) {
+    function showStep(stepId) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById(stepId).classList.add('active');
+    }
+
+    function handleSendOTP(e) {
       e.preventDefault();
       const phoneInput = document.getElementById('loginPhone').value.trim();
       const phone = normalizePhone(phoneInput);
@@ -424,8 +469,33 @@
         return;
       }
 
-      const otp = Math.floor(100000 + Math.random() * 900000);
-      alert(`Demo OTP: ${otp}\n\nIn production, this would be sent to ${phone}`);
+      // Generate demo OTP
+      currentOTP = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Show OTP step
+      document.getElementById('otpSubtitle').textContent = `We sent a 6-digit code to ${phone}`;
+      document.getElementById('demoOtpHint').textContent = `Demo OTP: ${currentOTP}`;
+      showStep('step-otp');
+    }
+
+    function handleVerifyOTP(e) {
+      e.preventDefault();
+      const entered = document.getElementById('otpInput').value.trim();
+
+      if (entered === currentOTP) {
+        alert('✅ Login successful! Redirecting to your dashboard...');
+        // TODO: redirect to dashboard page
+        // window.location.href = 'dashboard.html';
+      } else {
+        alert('❌ Incorrect OTP. Please try again.');
+        document.getElementById('otpInput').value = '';
+      }
+    }
+
+    function goBackToPhone() {
+      document.getElementById('otpInput').value = '';
+      currentOTP = null;
+      showStep('step-phone');
     }
 
     function handleRegister(e) {
@@ -435,43 +505,30 @@
       const phoneInput = document.getElementById('registerPhone').value.trim();
       const email = document.getElementById('registerEmail').value.trim();
       const password = document.getElementById('registerPassword').value;
-
       const phone = normalizePhone(phoneInput);
 
-      if (!name) {
-        alert('Please enter your full name');
-        return;
-      }
-      if (!phone) {
-        alert('Please enter a valid 9-digit Kenyan number');
-        return;
-      }
-      if (!email || !email.includes('@')) {
-        alert('Please enter a valid email address');
-        return;
-      }
-      if (password.length < 8) {
-        alert('Password must be at least 8 characters long');
-        return;
-      }
+      if (!name) { alert('Please enter your full name'); return; }
+      if (!phone) { alert('Please enter a valid 9-digit Kenyan number'); return; }
+      if (!email || !email.includes('@')) { alert('Please enter a valid email address'); return; }
+      if (password.length < 8) { alert('Password must be at least 8 characters long'); return; }
 
-      // Fake successful registration + demo OTP
-      const fakeOTP = Math.floor(100000 + Math.random() * 900000);
-
-      alert(
-        "Registration successful!\n\n" +
-        "Welcome, " + name + "!\n" +
-        "You can now sign in with your phone number.\n\n" +
-        "Demo OTP (use this to log in right now): " + fakeOTP +
-        "\n\n(In real version this would be sent via SMS)"
-      );
-
-      // Auto-fill login phone and switch to login view
-      document.getElementById('loginPhone').value = phoneInput;
+      // Switch to login panel and show success message
       wrapper.classList.remove('right-panel-active');
+      mobileSignInToggle.style.display = 'block';
+      mobileSignUpToggle.style.display = 'none';
+
+      // Pre-fill phone and show success message
+      document.getElementById('loginPhone').value = phoneInput;
+      const msg = document.getElementById('loginSuccessMsg');
+      msg.textContent = `✅ Account created for ${name}! Please log in below.`;
+      msg.style.display = 'block';
+
+      // Reset signup form
+      document.getElementById('signupForm') && document.getElementById('signupForm').reset?.();
+      showStep('step-phone');
     }
 
-    // Initialize - show sign in panel
+    // Initialize
     wrapper.classList.remove('right-panel-active');
     mobileSignInToggle.style.display = 'block';
     mobileSignUpToggle.style.display = 'none';
