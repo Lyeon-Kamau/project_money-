@@ -4,25 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - M-Pesa Tracker</title>
+
+    <!-- Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- ✅ PDF Support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #16a34a 75%, #059669 100%);
             min-height: 100vh;
         }
-        
         .navbar {
             background: rgba(51, 80, 94, 0.95);
             padding: 1rem 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(241, 239, 239, 0.1);
         }
-        
         .logo {
             font-size: 1.8rem;
             font-weight: bold;
@@ -32,447 +34,184 @@
             -webkit-text-fill-color: transparent;
             text-decoration: none;
         }
-        
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-        
-        .nav-links a {
-            text-decoration: none;
-            color: #eff1f5;
-            font-weight: 500;
-        }
-        
-        .nav-links a:hover { color: #16a34a; }
-        
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { text-decoration: none; color: #eff1f5; }
         .btn {
             padding: 0.75rem 1.5rem;
-            border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
             font-weight: 600;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
+            border: none;
         }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
         .btn-success {
             background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
             color: white;
         }
-        
         .btn-secondary {
             background: white;
-            color: #374151;
             border: 2px solid #e5e7eb;
         }
-        
         .dashboard-container {
             padding: 2rem 5%;
             max-width: 1400px;
-            margin: 0 auto;
+            margin: auto;
         }
-        
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        
-        .dashboard-header h1 {
-            color: white;
-            font-size: 2rem;
-        }
-        
-        .user-info {
-            background: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .stat-card h3 {
-            color: #6b7280;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-card .value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #374151;
-        }
-        
-        .stat-card.sent .value { color: #dc2626; }
-        .stat-card.received .value { color: #16a34a; }
-        .stat-card.net .value {
-            background: linear-gradient(135deg, #667eea 0%, #16a34a 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
         .content-card {
             background: white;
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
         }
-        
-        .content-card h2 {
-            color: #374151;
-            margin-bottom: 1.5rem;
-        }
-        
         .upload-area {
             border: 2px dashed #e5e7eb;
             border-radius: 12px;
             padding: 3rem;
             text-align: center;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s;
             cursor: pointer;
         }
-        
-        .upload-area:hover {
-            border-color: #16a34a;
-            background: rgba(22, 163, 74, 0.05);
-        }
-        
         textarea {
             width: 100%;
             padding: 1rem;
-            border: 2px solid #e5e7eb;
             border-radius: 8px;
-            font-size: 1rem;
-            font-family: inherit;
-            resize: vertical;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: #16a34a;
-        }
-        
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
+            border: 2px solid #e5e7eb;
         }
     </style>
 </head>
+
 <body>
-    <nav class="navbar">
-        <a href="dashboard.html" class="logo">⌘ M-Pesa Tracker</a>
-        <ul class="nav-links">
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="transactions.html">Transactions</a></li>
-            <li><a href="settings.html">Settings</a></li>
-        </ul>
-        <button class="btn btn-secondary" onclick="logout()">Logout</button>
-    </nav>
 
-    <div class="dashboard-container">
-        <div class="dashboard-header">
-            <h1>Dashboard</h1>
-            <div class="user-info">
-                <span>👤</span>
-                <span id="userName">User</span>
-            </div>
+<nav class="navbar">
+    <a href="dashboard.html" class="logo">⌘ M-Pesa Tracker</a>
+    <button class="btn btn-secondary" onclick="logout()">Logout</button>
+</nav>
+
+<div class="dashboard-container">
+
+    <div class="content-card">
+        <h2>Import M-Pesa Messages</h2>
+
+        <div class="upload-area" onclick="document.getElementById('fileUpload').click()">
+            <p style="font-size:3rem;">📤</p>
+            <p>Click to upload</p>
+            <p style="font-size:0.9rem; color:#888;">TXT, CSV, XML, or PDF files</p>
+
+            <!-- ✅ PDF added -->
+            <input type="file" id="fileUpload"
+                   accept=".txt,.csv,.xml,.pdf"
+                   style="display:none;"
+                   onchange="handleFileUpload(event)">
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-card sent">
-                <h3>Total Sent</h3>
-                <div class="value" id="totalSent">KSh 0.00</div>
-            </div>
-            <div class="stat-card received">
-                <h3>Total Received</h3>
-                <div class="value" id="totalReceived">KSh 0.00</div>
-            </div>
-            <div class="stat-card net">
-                <h3>Net Balance</h3>
-                <div class="value" id="netBalance">KSh 0.00</div>
-            </div>
-            <div class="stat-card">
-                <h3>Total Transactions</h3>
-                <div class="value" id="totalTransactions">0</div>
-            </div>
-        </div>
+        <p style="text-align:center;margin:1rem 0;">OR</p>
 
-        <div class="content-card">
-            <h2>Import M-Pesa Messages</h2>
-            <div class="upload-area" onclick="document.getElementById('fileUpload').click()">
-                <p style="font-size: 3rem; margin-bottom: 0.5rem;">📤</p>
-                <p style="color: #6b7280; margin-bottom: 0.5rem;">Click to upload or drag and drop</p>
-                <p style="color: #9ca3af; font-size: 0.875rem;">TXT, CSV, or XML files</p>
-                <input type="file" id="fileUpload" accept=".txt,.csv,.xml" style="display: none;" onchange="handleFileUpload(event)">
-            </div>
-            
-            <p style="text-align: center; color: #6b7280; margin: 1rem 0;">OR</p>
-            
-            <textarea id="pasteArea" rows="4" placeholder="Paste your M-Pesa SMS messages here (one per line)..."></textarea>
-            <button class="btn btn-success" style="margin-top: 1rem;" onclick="handlePaste()">Import Messages</button>
-        </div>
+        <textarea id="pasteArea" rows="4"
+                  placeholder="Paste your M-Pesa SMS messages here..."></textarea>
 
-        <div class="content-card">
-            <h2>Quick Actions</h2>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <a href="transactions.html" class="btn btn-primary">View All Transactions</a>
-                <button class="btn btn-success" onclick="exportToExcel()">📥 Export to Excel</button>
-                <button class="btn btn-secondary" onclick="generateReport()">📄 Generate Report</button>
-                <a href="settings.html" class="btn btn-secondary">⚙️ Settings</a>
-            </div>
-        </div>
+        <button class="btn btn-success" style="margin-top:1rem;"
+                onclick="handlePaste()">Import Messages</button>
     </div>
 
-    <script>
-        var currentUser = null;
-        var transactions = [];
+</div>
 
-        window.onload = function() {
-            checkAuth();
-            loadTransactions();
-            updateDashboard();
+<script>
+var transactions = [];
+
+function logout() {
+    localStorage.removeItem('mpesa_current_user');
+    window.location.href = 'index.html';
+}
+
+function parseMPesaMessage(message) {
+    var sent = /confirmed\.\s*ksh?([\d,]+\.?\d*)\s+sent to\s+([^.]+)/i;
+    var received = /confirmed\.\s*ksh?([\d,]+\.?\d*)\s+received from\s+([^.]+)/i;
+
+    var matchSent = message.match(sent);
+    if (matchSent) {
+        return {
+            type: 'sent',
+            amount: parseFloat(matchSent[1].replace(/,/g,'')),
+            person: matchSent[2].trim(),
+            date: new Date().toISOString().split('T')[0]
+        };
+    }
+
+    var matchReceived = message.match(received);
+    if (matchReceived) {
+        return {
+            type: 'received',
+            amount: parseFloat(matchReceived[1].replace(/,/g,'')),
+            person: matchReceived[2].trim(),
+            date: new Date().toISOString().split('T')[0]
+        };
+    }
+
+    return null;
+}
+
+function handlePaste() {
+    var text = document.getElementById('pasteArea').value;
+    var messages = text.split('\n').filter(line => line.trim());
+    processMessages(messages);
+}
+
+function handleFileUpload(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+
+    // ✅ PDF Handling
+    if (file.name.toLowerCase().endsWith('.pdf')) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            var typedarray = new Uint8Array(e.target.result);
+
+            pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
+                var textPromises = [];
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    textPromises.push(
+                        pdf.getPage(i).then(function(page) {
+                            return page.getTextContent().then(function(content) {
+                                return content.items.map(item => item.str).join(' ');
+                            });
+                        })
+                    );
+                }
+
+                Promise.all(textPromises).then(function(pagesText) {
+                    var fullText = pagesText.join('\n');
+                    var messages = fullText.split(/(?=[A-Z0-9]{10}\s)/); 
+                    processMessages(messages);
+                });
+            });
         };
 
-        function checkAuth() {
-            var saved = localStorage.getItem('mpesa_current_user');
-            if (!saved) {
-                alert('Please login first');
-                window.location.href = 'login.html';
-                return;
-            }
-            currentUser = JSON.parse(saved);
-            document.getElementById('userName').textContent = currentUser.name;
-        }
+        reader.readAsArrayBuffer(file);
+        return;
+    }
 
-        function logout() {
-            localStorage.removeItem('mpesa_current_user');
-            window.location.href = 'index.html';
-        }
+    // TXT, CSV, XML handling
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var text = e.target.result;
+        var messages = text.split('\n').filter(line => line.trim());
+        processMessages(messages);
+    };
 
-        function loadTransactions() {
-            var saved = localStorage.getItem('mpesa_transactions');
-            if (saved) {
-                transactions = JSON.parse(saved);
-            }
-        }
+    reader.readAsText(file);
+}
 
-        function saveTransactions() {
-            localStorage.setItem('mpesa_transactions', JSON.stringify(transactions));
-        }
+function processMessages(messages) {
+    var parsed = messages
+        .map(msg => parseMPesaMessage(msg))
+        .filter(t => t !== null);
 
-        function parseMPesaMessage(message) {
-            var patterns = {
-                sent: /confirmed\.\s*ksh?([\d,]+\.?\d*)\s+sent to\s+([^.]+?)(?:\s+\d+|\s+on)/i,
-                received: /confirmed\.\s*ksh?([\d,]+\.?\d*)\s+received from\s+([^.]+?)(?:\s+on|\s+\d+|\.)/i,
-                date: /on\s+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/i,
-                code: /^([A-Z0-9]{10})/,
-                balance: /balance\s+is\s+ksh?([\d,]+\.?\d*)/i
-            };
-            
-            var type = null;
-            var amount = null;
-            var person = null;
-            var date = new Date().toISOString().split('T')[0];
-            var code = null;
-            var balance = null;
-            
-            var codeMatch = message.match(patterns.code);
-            if (codeMatch) code = codeMatch[1];
-            
-            var sentMatch = message.match(patterns.sent);
-            if (sentMatch) {
-                type = 'sent';
-                amount = parseFloat(sentMatch[1].replace(/,/g, ''));
-                person = sentMatch[2].trim();
-            }
-            
-            var receivedMatch = message.match(patterns.received);
-            if (receivedMatch) {
-                type = 'received';
-                amount = parseFloat(receivedMatch[1].replace(/,/g, ''));
-                person = receivedMatch[2].trim();
-            }
-            
-            var dateMatch = message.match(patterns.date);
-            if (dateMatch) {
-                var dateParts = dateMatch[1].split(/[\/\-]/);
-                if (dateParts[2].length === 2) {
-                    date = '20' + dateParts[2] + '-' + dateParts[1].padStart(2, '0') + '-' + dateParts[0].padStart(2, '0');
-                } else {
-                    date = dateParts[2] + '-' + dateParts[1].padStart(2, '0') + '-' + dateParts[0].padStart(2, '0');
-                }
-            }
-            
-            var balanceMatch = message.match(patterns.balance);
-            if (balanceMatch) {
-                balance = parseFloat(balanceMatch[1].replace(/,/g, ''));
-            }
-            
-            if (type && amount && person) {
-                return { type: type, amount: amount, person: person, date: date, code: code, balance: balance };
-            }
-            return null;
-        }
+    transactions = transactions.concat(parsed);
+    localStorage.setItem('mpesa_transactions', JSON.stringify(transactions));
 
-        function handlePaste() {
-            var text = document.getElementById('pasteArea').value;
-            var messages = text.split('\n').filter(function(line) { return line.trim(); });
-            processMessages(messages);
-        }
+    alert('Successfully imported ' + parsed.length + ' transactions!');
+}
+</script>
 
-        function handleFileUpload(event) {
-            var file = event.target.files[0];
-            if (!file) return;
-            
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var text = e.target.result;
-                var messages = [];
-                
-                if (file.name.endsWith('.xml')) {
-                    var parser = new DOMParser();
-                    var xmlDoc = parser.parseFromString(text, 'text/xml');
-                    var smsElements = xmlDoc.getElementsByTagName('sms');
-                    
-                    for (var i = 0; i < smsElements.length; i++) {
-                        var body = smsElements[i].getAttribute('body');
-                        if (body && body.toLowerCase().includes('mpesa')) {
-                            messages.push(body);
-                        }
-                    }
-                } else if (file.name.endsWith('.csv')) {
-                    var lines = text.split('\n');
-                    lines.forEach(function(line, idx) {
-                        if (idx === 0) return;
-                        var match = line.match(/"([^"]*)"/g);
-                        if (match) {
-                            var msg = match[match.length - 1].replace(/"/g, '');
-                            if (msg.toLowerCase().includes('mpesa')) {
-                                messages.push(msg);
-                            }
-                        }
-                    });
-                } else {
-                    messages = text.split('\n').filter(function(line) { return line.trim(); });
-                }
-                
-                processMessages(messages);
-            };
-            reader.readAsText(file);
-        }
-
-        function processMessages(messages) {
-            var parsed = messages
-                .map(function(msg) { return parseMPesaMessage(msg); })
-                .filter(function(t) { return t !== null; });
-            
-            transactions = transactions.concat(parsed);
-            saveTransactions();
-            
-            alert('Successfully imported ' + parsed.length + ' transactions!');
-            updateDashboard();
-        }
-
-        function updateDashboard() {
-            var totalSent = transactions
-                .filter(function(t) { return t.type === 'sent'; })
-                .reduce(function(sum, t) { return sum + t.amount; }, 0);
-            var totalReceived = transactions
-                .filter(function(t) { return t.type === 'received'; })
-                .reduce(function(sum, t) { return sum + t.amount; }, 0);
-            
-            document.getElementById('totalSent').textContent = 'KSh ' + totalSent.toFixed(2);
-            document.getElementById('totalReceived').textContent = 'KSh ' + totalReceived.toFixed(2);
-            document.getElementById('netBalance').textContent = 'KSh ' + (totalReceived - totalSent).toFixed(2);
-            document.getElementById('totalTransactions').textContent = transactions.length;
-        }
-
-        function exportToExcel() {
-            if (transactions.length === 0) {
-                alert('No transactions to export');
-                return;
-            }
-            
-            var data = transactions.map(function(t) {
-                return {
-                    'Date': t.date,
-                    'Type': t.type.charAt(0).toUpperCase() + t.type.slice(1),
-                    'Person': t.person,
-                    'Amount (KSh)': t.amount.toFixed(2),
-                    'Transaction Code': t.code || 'N/A',
-                    'Balance (KSh)': t.balance ? t.balance.toFixed(2) : 'N/A'
-                };
-            });
-            
-            var ws = XLSX.utils.json_to_sheet(data);
-            var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
-            
-            XLSX.writeFile(wb, 'mpesa_transactions_' + new Date().toISOString().split('T')[0] + '.xlsx');
-        }
-
-        function generateReport() {
-            if (transactions.length === 0) {
-                alert('No transactions to generate report');
-                return;
-            }
-            
-            var totalSent = transactions
-                .filter(function(t) { return t.type === 'sent'; })
-                .reduce(function(sum, t) { return sum + t.amount; }, 0);
-            var totalReceived = transactions
-                .filter(function(t) { return t.type === 'received'; })
-                .reduce(function(sum, t) { return sum + t.amount; }, 0);
-            
-            var report = 'M-PESA TRANSACTION REPORT\n\n' +
-                'Generated: ' + new Date().toLocaleString() + '\n' +
-                'User: ' + currentUser.name + '\n\n' +
-                '=== SUMMARY ===\n' +
-                'Total Transactions: ' + transactions.length + '\n' +
-                'Total Sent: KSh ' + totalSent.toFixed(2) + '\n' +
-                'Total Received: KSh ' + totalReceived.toFixed(2) + '\n' +
-                'Net Balance: KSh ' + (totalReceived - totalSent).toFixed(2) + '\n\n' +
-                '=== TRANSACTIONS ===\n' +
-                transactions.map(function(t) {
-                    return t.date + ' | ' + t.type.toUpperCase() + ' | ' + t.person + ' | KSh ' + t.amount.toFixed(2);
-                }).join('\n');
-            
-            var blob = new Blob([report], { type: 'text/plain' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = 'mpesa_report_' + new Date().toISOString().split('T')[0] + '.txt';
-            a.click();
-        }
-    </script>
 </body>
 </html>
