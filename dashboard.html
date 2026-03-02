@@ -8,7 +8,7 @@
     <!-- Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <!-- ✅ PDF Support -->
+    <!--  PDF Support -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
     <style>
@@ -95,7 +95,7 @@
             <p>Click to upload</p>
             <p style="font-size:0.9rem; color:#888;">TXT, CSV, XML, or PDF files</p>
 
-            <!-- ✅ PDF added -->
+            <!--  PDF added -->
             <input type="file" id="fileUpload"
                    accept=".txt,.csv,.xml,.pdf"
                    style="display:none;"
@@ -158,7 +158,7 @@ function handleFileUpload(event) {
     var file = event.target.files[0];
     if (!file) return;
 
-    // ✅ PDF Handling
+    //  PDF Handling
     if (file.name.toLowerCase().endsWith('.pdf')) {
         var reader = new FileReader();
 
