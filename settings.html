@@ -5,16 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Settings - M-Pesa Tracker</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
+<!-- Supabase client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #16a34a 75%, #059669 100%);
     min-height: 100vh;
 }
-
 .navbar {
     background: rgba(255, 255, 255, 0.95);
     padding: 1rem 5%;
@@ -23,7 +22,6 @@ body {
     align-items: center;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
-
 .logo {
     font-size: 1.8rem;
     font-weight: bold;
@@ -33,21 +31,17 @@ body {
     -webkit-text-fill-color: transparent;
     text-decoration: none;
 }
-
 .nav-links {
     display: flex;
     gap: 2rem;
     list-style: none;
 }
-
 .nav-links a {
     text-decoration: none;
     color: #374151;
     font-weight: 500;
 }
-
 .nav-links a:hover { color: #16a34a; }
-
 .btn {
     padding: 0.75rem 1.5rem;
     border: none;
@@ -58,29 +52,24 @@ body {
     text-decoration: none;
     display: inline-block;
 }
-
 .btn-success {
     background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
     color: white;
 }
-
 .btn-secondary {
     background: white;
     color: #374151;
     border: 2px solid #e5e7eb;
 }
-
 .btn-danger {
     background: #dc2626;
     color: white;
 }
-
 .dashboard-container {
     padding: 2rem 5%;
     max-width: 1400px;
     margin: 0 auto;
 }
-
 .dashboard-header {
     display: flex;
     justify-content: space-between;
@@ -89,28 +78,23 @@ body {
     flex-wrap: wrap;
     gap: 1rem;
 }
-
 .dashboard-header h1 {
     color: white;
     font-size: 2rem;
 }
-
 .content-card {
     background: white;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-
 .settings-section {
     margin-bottom: 2rem;
 }
-
 .settings-section h3 {
     color: #374151;
     margin-bottom: 1rem;
 }
-
 .setting-item {
     display: flex;
     justify-content: space-between;
@@ -120,15 +104,33 @@ body {
     border-radius: 8px;
     margin-bottom: 0.5rem;
 }
-
 .setting-item strong {
     color: #374151;
 }
-
 .setting-item p {
     color: #6b7280;
 }
-
+textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    min-height: 120px;
+    resize: vertical;
+}
+textarea:focus {
+    outline: none;
+    border-color: #16a34a;
+}
+#feedbackStatus {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    text-align: center;
+}
+.success { background: #d1fae5; color: #065f46; }
+.error { background: #fee2e2; color: #991b1b; }
 @media (max-width: 768px) {
     .nav-links { display: none; }
     .setting-item {
@@ -139,9 +141,7 @@ body {
 }
 </style>
 </head>
-
 <body>
-
 <nav class="navbar">
     <a href="dashboard.html" class="logo">⌘ M-Pesa Tracker</a>
     <ul class="nav-links">
@@ -151,32 +151,26 @@ body {
     </ul>
     <button class="btn btn-secondary" onclick="logout()">Logout</button>
 </nav>
-
 <div class="dashboard-container">
     <div class="dashboard-header">
         <h1>Settings</h1>
         <a href="dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
     </div>
-
     <div class="content-card">
-
         <div class="settings-section">
             <h3>Account Information</h3>
-
             <div class="setting-item">
                 <div>
                     <strong>Name</strong>
                     <p id="settingsName">-</p>
                 </div>
             </div>
-
             <div class="setting-item">
                 <div>
                     <strong>Email</strong>
                     <p id="settingsEmail">-</p>
                 </div>
             </div>
-
             <div class="setting-item">
                 <div>
                     <strong>Member Since</strong>
@@ -184,24 +178,20 @@ body {
                 </div>
             </div>
         </div>
-
         <div class="settings-section">
             <h3>Transaction Statistics</h3>
-
             <div class="setting-item">
                 <div>
                     <strong>Total Transactions</strong>
                     <p id="statsTotal">0</p>
                 </div>
             </div>
-
             <div class="setting-item">
                 <div>
                     <strong>Total Amount Sent</strong>
                     <p id="statsSent" style="color:#dc2626;font-weight:600;">KSh 0.00</p>
                 </div>
             </div>
-
             <div class="setting-item">
                 <div>
                     <strong>Total Amount Received</strong>
@@ -209,10 +199,8 @@ body {
                 </div>
             </div>
         </div>
-
         <div class="settings-section">
             <h3>Data Management</h3>
-
             <div class="setting-item">
                 <div>
                     <strong>Export All Data</strong>
@@ -220,7 +208,6 @@ body {
                 </div>
                 <button class="btn btn-success" onclick="exportToExcel()">📥 Export</button>
             </div>
-
             <div class="setting-item">
                 <div>
                     <strong>Clear All Data</strong>
@@ -230,126 +217,161 @@ body {
             </div>
         </div>
         <div class="settings-section">
-    <h3>User Feedback</h3>
-    <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
-        <textarea id="userFeedback" rows="4" placeholder="Share your feedback here..."></textarea>
-        <button class="btn btn-success" onclick="submitFeedback()">Submit Feedback</button>
-    </div>
-</div>
-
+            <h3>User Feedback</h3>
+            <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
+                <textarea id="userFeedback" rows="4" placeholder="Share your feedback here..."></textarea>
+                <button class="btn btn-success" onclick="submitFeedback()">Submit Feedback</button>
+                <div id="feedbackStatus"></div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-var currentUser = null;
-var transactions = [];
+const { createClient } = supabase;
+const sb = createClient(
+  'https://umkvvazozqpyzpfgunox.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVta3Z2YXpvenFweXpwZmd1bm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODg3NDcsImV4cCI6MjA4Nzk2NDc0N30.ZIfiXBJtd01vnLsZjsGcNM4sA4Jsvp6pYR85xaOL4JA'
+);
+
+let currentUser = null;
+let transactions = [];
 
 window.onload = function() {
-    loadUserIfExists();
-    loadTransactions();
-    updateSettings();
+  loadUserIfExists();
+  loadTransactions();
+  updateSettings();
 };
 
-function loadUserIfExists() {
-    var saved = localStorage.getItem('mpesa_current_user');
-    currentUser = saved ? JSON.parse(saved) : null;
-}
+async function loadUserIfExists() {
+  const { data: { user }, error: authError } = await sb.auth.getUser();
 
-function logout() {
-    if (!localStorage.getItem('mpesa_current_user')) {
-        alert('You are not logged in.');
-        return;
-    }
+  if (authError || !user) {
+    document.getElementById('settingsName').textContent = 'Guest';
+    document.getElementById('settingsEmail').textContent = 'Not logged in';
+    document.getElementById('settingsMemberSince').textContent = '-';
+    return;
+  }
 
-    if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('mpesa_current_user');
-        window.location.href = 'landing.html';
-    }
+  // Fetch profile from users table
+  const { data: profile, error: profileError } = await sb
+    .from('users')
+    .select('id, full_name, email, created_at')
+    .eq('email', user.email)
+    .single();
+
+  if (profileError || !profile) {
+    console.error('Profile fetch error:', profileError);
+    document.getElementById('settingsName').textContent = 'Guest';
+    return;
+  }
+
+  currentUser = {
+    id: profile.id,
+    name: profile.full_name,
+    email: profile.email,
+    createdAt: profile.created_at
+  };
+
+  // Update UI
+  document.getElementById('settingsName').textContent = profile.full_name || '-';
+  document.getElementById('settingsEmail').textContent = profile.email || '-';
+  document.getElementById('settingsMemberSince').textContent = 
+    profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-GB') : '-';
 }
 
 function loadTransactions() {
-    var saved = localStorage.getItem('mpesa_transactions');
-    transactions = saved ? JSON.parse(saved) : [];
+  // For now still from localStorage - later replace with Supabase query
+  const saved = localStorage.getItem('mpesa_transactions');
+  transactions = saved ? JSON.parse(saved) : [];
 }
 
 function updateSettings() {
-    if (currentUser) {
-        document.getElementById('settingsName').textContent = currentUser.name || '-';
-        document.getElementById('settingsEmail').textContent = currentUser.email || '-';
-        document.getElementById('settingsMemberSince').textContent =
-            currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString() : '-';
-    } else {
-        document.getElementById('settingsName').textContent = 'Guest';
-        document.getElementById('settingsEmail').textContent = 'Not logged in';
-        document.getElementById('settingsMemberSince').textContent = '-';
-    }
+  const totalSent = transactions.filter(t => t.type === 'sent')
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+  const totalReceived = transactions.filter(t => t.type === 'received')
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-    var totalSent = transactions.filter(t => t.type === 'sent')
-        .reduce((sum, t) => sum + Number(t.amount), 0);
+  document.getElementById('statsTotal').textContent = transactions.length + ' transactions';
+  document.getElementById('statsSent').textContent = 'KSh ' + totalSent.toFixed(2);
+  document.getElementById('statsReceived').textContent = 'KSh ' + totalReceived.toFixed(2);
+}
 
-    var totalReceived = transactions.filter(t => t.type === 'received')
-        .reduce((sum, t) => sum + Number(t.amount), 0);
+async function submitFeedback() {
+  const feedbackText = document.getElementById('userFeedback').value.trim();
+  const statusEl = document.getElementById('feedbackStatus');
 
-    document.getElementById('statsTotal').textContent = transactions.length + ' transactions';
-    document.getElementById('statsSent').textContent = 'KSh ' + totalSent.toFixed(2);
-    document.getElementById('statsReceived').textContent = 'KSh ' + totalReceived.toFixed(2);
+  if (!feedbackText) {
+    statusEl.textContent = 'Please enter your feedback first.';
+    statusEl.className = 'error';
+    return;
+  }
+
+  statusEl.textContent = 'Submitting...';
+  statusEl.className = '';
+
+  const feedbackData = {
+    user_id: currentUser?.id || null,
+    user_name: currentUser?.name || 'Guest',
+    email: currentUser?.email || '',
+    message: feedbackText
+    // created_at is automatic
+  };
+
+  const { error } = await sb.from('feedback').insert(feedbackData);
+
+  if (error) {
+    console.error('Feedback submission error:', error);
+    statusEl.textContent = 'Error: ' + (error.message || 'Could not submit feedback');
+    statusEl.className = 'error';
+    return;
+  }
+
+  statusEl.textContent = 'Thank you! Your feedback has been submitted successfully ❤️';
+  statusEl.className = 'success';
+  document.getElementById('userFeedback').value = '';
+
+  // Optional: clear status after 5 seconds
+  setTimeout(() => { statusEl.textContent = ''; statusEl.className = ''; }, 5000);
+}
+
+function logout() {
+  if (confirm('Are you sure you want to logout?')) {
+    localStorage.removeItem('mpesa_current_user');
+    sb.auth.signOut(); // Also sign out from Supabase
+    window.location.href = 'landing.html';
+  }
 }
 
 function exportToExcel() {
-    if (transactions.length === 0) {
-        alert('No transactions to export');
-        return;
-    }
-
-    var data = transactions.map(t => ({
-        'Date': t.date,
-        'Type': t.type,
-        'Person': t.person,
-        'Amount (KSh)': Number(t.amount).toFixed(2)
-    }));
-
-    var ws = XLSX.utils.json_to_sheet(data);
-    var wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
-    XLSX.writeFile(wb, 'mpesa_export.xlsx');
+  if (transactions.length === 0) {
+    alert('No transactions to export');
+    return;
+  }
+  const data = transactions.map(t => ({
+    'Date': t.date,
+    'Type': t.type,
+    'Person': t.person,
+    'Amount (KSh)': Number(t.amount).toFixed(2)
+  }));
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
+  XLSX.writeFile(wb, 'mpesa_export.xlsx');
 }
 
 function clearAllData() {
-    if (transactions.length === 0) {
-        alert('No data to clear.');
-        return;
-    }
-
-    if (confirm('Are you sure you want to delete all transactions?')) {
-        localStorage.removeItem('mpesa_transactions');
-        transactions = [];
-        updateSettings();
-        alert('All data cleared successfully.');
-    }
+  if (transactions.length === 0) {
+    alert('No data to clear.');
+    return;
+  }
+  if (confirm('Are you sure you want to delete all transactions?')) {
+    localStorage.removeItem('mpesa_transactions');
+    transactions = [];
+    updateSettings();
+    alert('All data cleared successfully.');
+  }
 }
-
-function submitFeedback() {
-    var feedback = document.getElementById('userFeedback').value.trim();
-    if (!feedback) {
-        alert('Please enter your feedback before submitting.');
-        return;
-    }
-
-    var allFeedback = JSON.parse(localStorage.getItem('mpesa_feedback') || '[]');
-    var feedbackEntry = {
-        user: currentUser ? currentUser.name : 'Guest',
-        email: currentUser ? currentUser.email : '',
-        message: feedback,
-        date: new Date().toISOString()
-    };
-    allFeedback.push(feedbackEntry);
-    localStorage.setItem('mpesa_feedback', JSON.stringify(allFeedback));
-
-    alert('Thank you for your feedback!');
-    document.getElementById('userFeedback').value = '';
-}
-
 </script>
-
 </body>
 </html>

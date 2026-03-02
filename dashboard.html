@@ -1,364 +1,595 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard - M-Pesa Tracker</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-<!-- ✅ Added PDF.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #16a34a 75%, #059669 100%);
-min-height: 100vh;
-}
-.navbar {
-background: rgba(51, 80, 94, 0.95);
-padding: 1rem 5%;
-display: flex;
-justify-content: space-between;
-align-items: center;
-box-shadow: 0 2px 10px rgba(241, 239, 239, 0.1);
-}
-.logo {
-font-size: 1.8rem;
-font-weight: bold;
-background: linear-gradient(135deg, #667eea 0%, #16a34a 100%);
-background-clip: text;
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-text-decoration: none;
-}
-.nav-links { display: flex; gap: 2rem; list-style: none; }
-.nav-links a { text-decoration: none; color: #eff1f5; font-weight: 500; }
-.nav-links a:hover { color: #16a34a; }
-.btn {
-padding: 0.75rem 1.5rem;
-border: none;
-border-radius: 8px;
-cursor: pointer;
-font-size: 1rem;
-font-weight: 600;
-transition: all 0.3s;
-text-decoration: none;
-display: inline-block;
-}
-.btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-.btn-success { background: linear-gradient(135deg, #16a34a 0%, #059669 100%); color: white; }
-.btn-secondary { background: white; color: #374151; border: 2px solid #e5e7eb; }
-.dashboard-container { padding: 2rem 5%; max-width: 1400px; margin: 0 auto; }
-.dashboard-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 2rem;
-flex-wrap: wrap;
-gap: 1rem;
-}
-.dashboard-header h1 { color: white; font-size: 2rem; }
-.user-info {
-background: white;
-padding: 0.75rem 1.5rem;
-border-radius: 8px;
-display: flex;
-align-items: center;
-gap: 1rem;
-}
-.stats-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-gap: 1.5rem;
-margin-bottom: 2rem;
-}
-.stat-card {
-background: white;
-padding: 2rem;
-border-radius: 12px;
-box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-.stat-card h3 { color: #6b7280; font-size: 0.9rem; margin-bottom: 0.5rem; }
-.stat-card .value { font-size: 2rem; font-weight: bold; color: #374151; }
-.stat-card.sent .value { color: #dc2626; }
-.stat-card.received .value { color: #16a34a; }
-.stat-card.net .value {
-background: linear-gradient(135deg, #667eea 0%, #16a34a 100%);
-background-clip: text;
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-}
-.content-card {
-background: white;
-padding: 2rem;
-border-radius: 12px;
-box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-margin-bottom: 2rem;
-}
-.content-card h2 { color: #374151; margin-bottom: 1.5rem; }
-.upload-area {
-border: 2px dashed #e5e7eb;
-border-radius: 12px;
-padding: 3rem;
-text-align: center;
-margin-bottom: 1.5rem;
-transition: all 0.3s;
-cursor: pointer;
-}
-.upload-area:hover { border-color: #16a34a; background: rgba(22, 163, 74, 0.05); }
-textarea {
-width: 100%;
-padding: 1rem;
-border: 2px solid #e5e7eb;
-border-radius: 8px;
-font-size: 1rem;
-font-family: inherit;
-resize: vertical;
-}
-textarea:focus { outline: none; border-color: #16a34a; }
-@media (max-width: 768px) { .nav-links { display: none; } }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - M-Pesa Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #16a34a 75%, #059669 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.9rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #16a34a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: #16a34a; }
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-success { background: linear-gradient(135deg, #16a34a 0%, #059669 100%); color: white; }
+        .btn-secondary { background: white; color: #374151; border: 2px solid #e5e7eb; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .dashboard-container { padding: 3rem 5% 5rem; max-width: 1400px; margin: 0 auto; }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .dashboard-header h1 { color: white; font-size: 2.5rem; font-weight: 800; }
+        .user-info {
+            background: white;
+            padding: 0.9rem 1.8rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            font-weight: 600;
+            color: #374151;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.8rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-8px); }
+        .stat-card h3 { color: #6b7280; font-size: 1rem; margin-bottom: 0.8rem; font-weight: 600; }
+        .stat-card .value { font-size: 2.5rem; font-weight: 800; }
+        .stat-card.sent .value { color: #dc2626; }
+        .stat-card.received .value { color: #16a34a; }
+        .stat-card.net .value {
+            background: linear-gradient(135deg, #667eea 0%, #16a34a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .content-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+        .content-card h2 { color: #374151; margin-bottom: 1.8rem; font-size: 1.8rem; font-weight: 700; }
+        .upload-area {
+            border: 3px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(255,255,255,0.6);
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .upload-area:hover, .upload-area.active {
+            border-color: #16a34a;
+            background: rgba(22,163,74,0.08);
+            box-shadow: 0 0 20px rgba(22,163,74,0.2);
+        }
+        .upload-area .icon { font-size: 4.5rem; margin-bottom: 1rem; color: #9ca3af; transition: color 0.3s; }
+        .upload-area:hover .icon, .upload-area.active .icon { color: #16a34a; }
+        textarea {
+            width: 100%;
+            padding: 1.2rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            min-height: 140px;
+            resize: vertical;
+            transition: border 0.3s;
+        }
+        textarea:focus { border-color: #16a34a; outline: none; }
+        #importStatus {
+            margin-top: 1.5rem;
+            padding: 1.2rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+        .success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        #loadingStats, #loadingImport { text-align: center; padding: 4rem 0; color: #6b7280; font-size: 1.3rem; }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .dashboard-header h1 { font-size: 2rem; }
+            .stat-card .value { font-size: 2rem; }
+        }
+    </style>
 </head>
-
 <body>
 <nav class="navbar">
-<a href="dashboard.html" class="logo">⌘ M-Pesa Tracker</a>
-<ul class="nav-links">
-<li><a href="dashboard.html">Dashboard</a></li>
-<li><a href="transactions.html">Transactions</a></li>
-<li><a href="settings.html">Settings</a></li>
-</ul>
-<button class="btn btn-secondary" onclick="logout()">Logout</button>
+    <a href="dashboard.html" class="logo">⌘ M-Pesa Tracker</a>
+    <ul class="nav-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="transactions.html">Transactions</a></li>
+        <li><a href="settings.html">Settings</a></li>
+    </ul>
+    <button class="btn btn-secondary" onclick="logout()">Logout</button>
 </nav>
-
 <div class="dashboard-container">
-<div class="dashboard-header">
-<h1>Dashboard</h1>
-<div class="user-info">
-<span>👤</span>
-<span id="userName">User</span>
-</div>
-</div>
-
-<div class="stats-grid">
-<div class="stat-card sent">
-<h3>Total Sent</h3>
-<div class="value" id="totalSent">KSh 0.00</div>
-</div>
-<div class="stat-card received">
-<h3>Total Received</h3>
-<div class="value" id="totalReceived">KSh 0.00</div>
-</div>
-<div class="stat-card net">
-<h3>Net Balance</h3>
-<div class="value" id="netBalance">KSh 0.00</div>
-</div>
-<div class="stat-card">
-<h3>Total Transactions</h3>
-<div class="value" id="totalTransactions">0</div>
-</div>
-</div>
-
-<div class="content-card">
-<h2>Import M-Pesa Messages</h2>
-
-<div class="upload-area" onclick="document.getElementById('fileUpload').click()">
-<p style="font-size: 3rem; margin-bottom: 0.5rem;">📤</p>
-<p style="color: #6b7280; margin-bottom: 0.5rem;">Click to upload or drag and drop</p>
-
-<!-- ✅ Updated text -->
-<p style="color: #9ca3af; font-size: 0.875rem;">TXT, CSV, XML, or PDF files</p>
-
-<!-- ✅ Added .pdf -->
-<input type="file" id="fileUpload" accept=".txt,.csv,.xml,.pdf"
-style="display: none;" onchange="handleFileUpload(event)">
-</div>
-
-<p style="text-align: center; color: #6b7280; margin: 1rem 0;">OR</p>
-
-<textarea id="pasteArea" rows="4"
-placeholder="Paste your M-Pesa SMS messages here (one per line)..."></textarea>
-
-<button class="btn btn-success" style="margin-top: 1rem;"
-onclick="handlePaste()">Import Messages</button>
-</div>
-
-<div class="content-card">
-<h2>Quick Actions</h2>
-<div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-<a href="transactions.html" class="btn btn-primary">View All Transactions</a>
-<button class="btn btn-success" onclick="exportToExcel()">📥 Export to Excel</button>
-<button class="btn btn-secondary" onclick="generateReport()">📄 Generate Report</button>
-<a href="settings.html" class="btn btn-secondary">⚙️ Settings</a>
-</div>
-</div>
+    <div class="dashboard-header">
+        <h1>Dashboard</h1>
+        <div class="user-info">
+            <span>👤</span>
+            <span id="userName">Loading...</span>
+        </div>
+    </div>
+    <div id="loadingStats">Loading your stats...</div>
+    <div class="stats-grid" style="display:none;" id="statsContainer">
+        <div class="stat-card sent">
+            <h3>Total Sent</h3>
+            <div class="value" id="totalSent">KSh 0.00</div>
+        </div>
+        <div class="stat-card received">
+            <h3>Total Received</h3>
+            <div class="value" id="totalReceived">KSh 0.00</div>
+        </div>
+        <div class="stat-card net">
+            <h3>Net Balance</h3>
+            <div class="value" id="netBalance">KSh 0.00</div>
+        </div>
+        <div class="stat-card">
+            <h3>Total Transactions</h3>
+            <div class="value" id="totalTransactions">0</div>
+        </div>
+    </div>
+    <div class="content-card">
+        <h2>Import M-Pesa Messages</h2>
+        <div class="upload-area" id="uploadArea">
+            <div class="icon">📤</div>
+            <p>Click or drag & drop your backup file here</p>
+            <p style="color: #9ca3af; font-size: 0.95rem;">Supports TXT, CSV, XML, PDF (from SMS Backup & Restore)</p>
+            <input type="file" id="fileUpload" accept=".txt,.csv,.xml,.pdf" style="display: none;" onchange="handleFileUpload(event)">
+        </div>
+        <p style="text-align: center; color: #6b7280; margin: 1.5rem 0; font-weight: 500;">OR paste messages below</p>
+        <textarea id="pasteArea" placeholder="Paste your M-Pesa SMS messages here (one per line or as copied from backup)..."></textarea>
+        <button class="btn btn-success" style="margin-top: 1.5rem; width: 100%; padding: 1rem;" onclick="handlePaste()">Import Messages</button>
+        <div id="importStatus"></div>
+    </div>
+    <div class="content-card">
+        <h2>Quick Actions</h2>
+        <div style="display: flex; gap: 1.2rem; flex-wrap: wrap;">
+            <a href="transactions.html" class="btn btn-primary">View All Transactions</a>
+            <button class="btn btn-success" onclick="exportToExcel()">📥 Export to Excel</button>
+            <button class="btn btn-danger" onclick="clearMyTransactions()">🗑️ Delete All My Transactions</button>
+            <a href="settings.html" class="btn btn-secondary">⚙️ Settings</a>
+        </div>
+    </div>
 </div>
 
 <script>
-var currentUser = null;
-var transactions = [];
+const { createClient } = supabase;
+const sb = createClient(
+    'https://umkvvazozqpyzpfgunox.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVta3Z2YXpvenFweXpwZmd1bm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODg3NDcsImV4cCI6MjA4Nzk2NDc0N30.ZIfiXBJtd01vnLsZjsGcNM4sA4Jsvp6pYR85xaOL4JA'
+);
 
-window.onload = function() {
-checkAuth();
-loadTransactions();
-updateDashboard();
+let currentUser = null;
+let transactions = [];
+
+// Make upload area fully clickable + drag & drop
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileUpload');
+
+uploadArea.addEventListener('click', () => fileInput.click());
+
+uploadArea.addEventListener('dragover', e => {
+    e.preventDefault();
+    uploadArea.classList.add('active');
+});
+
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('active'));
+
+uploadArea.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadArea.classList.remove('active');
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileUpload({ target: { files: [file] } });
+});
+
+window.onload = async function() {
+    await loadUser();
+    if (currentUser) {
+        await loadTransactions();
+        updateDashboard();
+        document.getElementById('statsContainer').style.display = 'grid';
+        document.getElementById('loadingStats').style.display = 'none';
+    }
 };
 
-function checkAuth() {
-var saved = localStorage.getItem('mpesa_current_user');
-if (!saved) {
-alert('Please login first');
-window.location.href = 'login.html';
-return;
-}
-currentUser = JSON.parse(saved);
-document.getElementById('userName').textContent = currentUser.name;
+async function loadUser() {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) {
+        alert('Please login first');
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const { data: profile } = await sb
+        .from('users')
+        .select('id, full_name, email')
+        .eq('email', user.email)
+        .single();
+
+    if (profile) {
+        currentUser = {
+            id: profile.id,
+            name: profile.full_name || 'User',
+            email: profile.email
+        };
+        document.getElementById('userName').textContent = currentUser.name;
+    } else {
+        alert('User profile not found.');
+        window.location.href = 'login.html';
+    }
 }
 
-function logout() {
-localStorage.removeItem('mpesa_current_user');
-window.location.href = 'index.html';
+async function loadTransactions() {
+    const { data, error } = await sb
+        .from('mpesa_transactions')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('transaction_date', { ascending: false });
+
+    if (error) {
+        console.error('Load error:', error);
+        alert('Could not load transactions: ' + error.message);
+        return;
+    }
+
+    transactions = data || [];
 }
 
-function loadTransactions() {
-var saved = localStorage.getItem('mpesa_transactions');
-if (saved) {
-transactions = JSON.parse(saved);
-}
+function updateDashboard() {
+    const totalSent = transactions
+        .filter(t => t.transaction_type === 'sent')
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+    const totalReceived = transactions
+        .filter(t => t.transaction_type === 'received')
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+    document.getElementById('totalSent').textContent = 'KSh ' + totalSent.toFixed(2);
+    document.getElementById('totalReceived').textContent = 'KSh ' + totalReceived.toFixed(2);
+    document.getElementById('netBalance').textContent = 'KSh ' + (totalReceived - totalSent).toFixed(2);
+    document.getElementById('totalTransactions').textContent = transactions.length;
 }
 
-function saveTransactions() {
-localStorage.setItem('mpesa_transactions', JSON.stringify(transactions));
-}
-
+// FINAL FIXED PARSER - tuned for your exact messages
 function parseMPesaMessage(message) {
-/* unchanged */
-var patterns = {
-sent: /confirmed\.\s*ksh?([\d,]+\.?\d*)\s+sent to\s+([^.]+?)(?:\s+\d+|\s+on)/i,
-received: /confirmed\.\s*ksh?([\d,]+\.?\d*)\s+received from\s+([^.]+?)(?:\s+on|\s+\d+|\.)/i,
-date: /on\s+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/i,
-code: /^([A-Z0-9]{10})/,
-balance: /balance\s+is\s+ksh?([\d,]+\.?\d*)/i
-};
+    message = message.trim();
+    if (!/mpesa|confirmed/i.test(message)) return null;
 
-var type=null,amount=null,person=null,
-date=new Date().toISOString().split('T')[0],
-code=null,balance=null;
+    // 1. Code: first 10 uppercase alphanum
+    const codeMatch = message.match(/^([A-Z0-9]{10})\s/);
+    const code = codeMatch ? codeMatch[1] : null;
 
-var codeMatch=message.match(patterns.code);
-if(codeMatch) code=codeMatch[1];
+    if (code && transactions.some(t => t.transaction_code === code)) {
+        console.log('Duplicate skipped:', code);
+        return null;
+    }
 
-var sentMatch=message.match(patterns.sent);
-if(sentMatch){ type='sent'; amount=parseFloat(sentMatch[1].replace(/,/g,'')); person=sentMatch[2].trim(); }
+    // 2. Amount: first KSh value
+    const amountMatch = message.match(/ksh?([\d,]+\.?\d*)/i);
+    let amount = amountMatch ? parseFloat(amountMatch[1].replace(/,/g, '')) : null;
 
-var receivedMatch=message.match(patterns.received);
-if(receivedMatch){ type='received'; amount=parseFloat(receivedMatch[1].replace(/,/g,'')); person=receivedMatch[2].trim(); }
+    // 3. Date: DD/MM/YY or DD/MM/YYYY
+    const dateMatch = message.match(/(\d{1,2}\/\d{1,2}\/\d{2,4})/);
+    let date = new Date().toISOString().split('T')[0];
+    if (dateMatch) {
+        const [dd, mm, yy] = dateMatch[1].split('/');
+        const year = yy.length === 2 ? '20' + yy : yy;
+        date = `${year}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}`;
+    }
 
-var dateMatch=message.match(patterns.date);
-if(dateMatch){
-var p=dateMatch[1].split(/[\/\-]/);
-date=(p[2].length===2?'20'+p[2]:p[2])+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');
+    // 4. Balance
+    const balanceMatch = message.match(/(?:new m-pesa balance is|balance is) ksh?([\d,]+\.?\d*)/i);
+    const balance = balanceMatch ? parseFloat(balanceMatch[1].replace(/,/g, '')) : null;
+
+    // 5. Type & Sender - FIXED for your messages
+    let type = null;
+    let sender = 'Unknown';
+
+    // Received (handles no space after Confirmed.)
+    if (/you have received|received/i.test(message)) {
+        type = 'received';
+        const recMatch = message.match(/(?:Confirmed\.?\s*|)(?:You have received|received)\s*ksh?([\d,]+\.?\d*)\s*from\s*([^.]+?)(?:\s+on|\.|\s*$)/i);
+        if (recMatch) {
+            amount = amount || parseFloat(recMatch[1].replace(/,/g, ''));
+            sender = recMatch[2].trim().replace(/\s+\d{9,10}$/, ''); // remove phone
+        }
+    } 
+    // Sent / Paid / Transferred
+    else if (/sent to|paid to|transferred to/i.test(message)) {
+        type = 'sent';
+        const sentMatch = message.match(/(?:Confirmed\.?\s*|)(?:sent to|paid to|transferred to)\s*([^.]+?)(?:\s*for account|\s*on|\.|\s*$)/i);
+        if (sentMatch) {
+            sender = sentMatch[1].trim();
+        }
+    } 
+    // M-Shwari
+    else if (/transferred (?:to|from) m-shwari/i.test(message)) {
+        type = /to m-shwari/i.test(message) ? 'sent' : 'received';
+        sender = 'M-Shwari';
+    } 
+    // Failed
+    else if (/failed|insufficient/i.test(message)) {
+        type = 'failed';
+        sender = 'System';
+    }
+
+    // Fallback amount
+    if (!amount) {
+        const fallback = message.match(/ksh?([\d,]+\.?\d*)/i);
+        if (fallback) amount = parseFloat(fallback[1].replace(/,/g, ''));
+    }
+
+    // Save only if type and amount found
+    if (type && amount !== null) {
+        return {
+            type,
+            amount,
+            person: sender.trim(),
+            date,
+            code,
+            balance,
+            raw: message
+        };
+    }
+
+    console.log('Unparsed message:', message.substring(0, 150) + '...');
+    return null;
 }
 
-var balanceMatch=message.match(patterns.balance);
-if(balanceMatch) balance=parseFloat(balanceMatch[1].replace(/,/g,''));
+async function processMessages(messages) {
+    const statusEl = document.getElementById('importStatus');
+    statusEl.textContent = 'Processing ' + messages.length + ' messages...';
+    statusEl.className = '';
 
-if(type&&amount&&person){ return {type,amount,person,date,code,balance}; }
-return null;
+    let imported = 0;
+    const newEntries = [];
+
+    messages.forEach(msg => {
+        const parsed = parseMPesaMessage(msg);
+        if (!parsed) return;
+
+        if (parsed.code && transactions.some(t => t.transaction_code === parsed.code)) return;
+
+        newEntries.push({
+            user_id: currentUser.id,
+            transaction_date: parsed.date,
+            transaction_type: parsed.type,
+            sender_name: parsed.person,
+            amount: parsed.amount,
+            transaction_code: parsed.code,
+            balance: parsed.balance,
+            raw_sms: parsed.raw
+        });
+        imported++;
+    });
+
+    if (newEntries.length === 0) {
+        statusEl.textContent = 'No new valid transactions found. Check console for unparsed messages.';
+        statusEl.className = 'error';
+        return;
+    }
+
+    const { error } = await sb.from('mpesa_transactions').insert(newEntries);
+
+    if (error) {
+        statusEl.textContent = 'Error saving: ' + error.message;
+        statusEl.className = 'error';
+        return;
+    }
+
+    await loadTransactions();
+    updateDashboard();
+
+    statusEl.textContent = `Imported ${imported} new transactions!`;
+    statusEl.className = 'success';
+    setTimeout(() => { statusEl.textContent = ''; statusEl.className = ''; }, 8000);
 }
 
 function handlePaste() {
-var text=document.getElementById('pasteArea').value;
-var messages=text.split('\n').filter(line=>line.trim());
-processMessages(messages);
+    const text = document.getElementById('pasteArea').value;
+    const messages = text.split('\n').filter(line => line.trim());
+    processMessages(messages);
 }
 
-/* ✅ UPDATED FUNCTION WITH PDF SUPPORT */
 function handleFileUpload(event) {
-var file=event.target.files[0];
-if(!file) return;
+    const file = event.target.files[0];
+    if (!file) return;
 
-if(file.name.toLowerCase().endsWith('.pdf')){
-var reader=new FileReader();
-reader.onload=function(e){
-var typedarray=new Uint8Array(e.target.result);
-pdfjsLib.getDocument(typedarray).promise.then(function(pdf){
-var textPromises=[];
-for(let i=1;i<=pdf.numPages;i++){
-textPromises.push(
-pdf.getPage(i).then(function(page){
-return page.getTextContent().then(function(content){
-return content.items.map(item=>item.str).join(' ');
-});
-})
-);
-}
-Promise.all(textPromises).then(function(pagesText){
-var fullText=pagesText.join('\n');
-var messages=fullText.split(/(?=[A-Z0-9]{10}\s)/);
-processMessages(messages);
-});
-});
-};
-reader.readAsArrayBuffer(file);
-return;
-}
+    const statusEl = document.getElementById('importStatus');
+    statusEl.textContent = 'Reading file...';
+    statusEl.className = '';
 
-var reader=new FileReader();
-reader.onload=function(e){
-var text=e.target.result;
-var messages=[];
-if(file.name.endsWith('.xml')){
-var parser=new DOMParser();
-var xmlDoc=parser.parseFromString(text,'text/xml');
-var smsElements=xmlDoc.getElementsByTagName('sms');
-for(var i=0;i<smsElements.length;i++){
-var body=smsElements[i].getAttribute('body');
-if(body&&body.toLowerCase().includes('mpesa')) messages.push(body);
-}
-}else if(file.name.endsWith('.csv')){
-var lines=text.split('\n');
-lines.forEach(function(line,idx){
-if(idx===0) return;
-var match=line.match(/"([^"]*)"/g);
-if(match){
-var msg=match[match.length-1].replace(/"/g,'');
-if(msg.toLowerCase().includes('mpesa')) messages.push(msg);
-}
-});
-}else{
-messages=text.split('\n').filter(line=>line.trim());
-}
-processMessages(messages);
-};
-reader.readAsText(file);
-}
+    const reader = new FileReader();
 
-function processMessages(messages){
-var parsed=messages.map(msg=>parseMPesaMessage(msg)).filter(t=>t!==null);
-transactions=transactions.concat(parsed);
-saveTransactions();
-alert('Successfully imported '+parsed.length+' transactions!');
-updateDashboard();
-}
+    if (file.name.toLowerCase().endsWith('.pdf')) {
+        reader.onload = async function(e) {
+            try {
+                const typedarray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let fullText = '';
 
-/* remaining functions unchanged */
-function updateDashboard(){
-var totalSent=transactions.filter(t=>t.type==='sent').reduce((s,t)=>s+t.amount,0);
-var totalReceived=transactions.filter(t=>t.type==='received').reduce((s,t)=>s+t.amount,0);
-document.getElementById('totalSent').textContent='KSh '+totalSent.toFixed(2);
-document.getElementById('totalReceived').textContent='KSh '+totalReceived.toFixed(2);
-document.getElementById('netBalance').textContent='KSh '+(totalReceived-totalSent).toFixed(2);
-document.getElementById('totalTransactions').textContent=transactions.length;
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    fullText += content.items.map(item => item.str).join(' ') + '\n\n';
+                }
+
+                const messages = fullText.split(/(?=[A-Z0-9]{10}\s|Confirmed\.|You have received|Failed\.)/i)
+                    .map(m => m.trim())
+                    .filter(m => m.length > 30 && /ksh|confirmed/i.test(m));
+
+                await processMessages(messages);
+            } catch (err) {
+                statusEl.textContent = 'PDF error: ' + err.message;
+                statusEl.className = 'error';
+            }
+        };
+        reader.readAsArrayBuffer(file);
+        return;
+    }
+
+    reader.onload = async function(e) {
+        let text = e.target.result;
+        let messages = [];
+
+        if (file.name.toLowerCase().endsWith('.xml')) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(text, 'text/xml');
+            const sms = xmlDoc.getElementsByTagName('sms');
+            for (let i = 0; i < sms.length; i++) {
+                const body = sms[i].getAttribute('body');
+                if (body && /mpesa|confirmed/i.test(body)) messages.push(body);
+            }
+        } else if (file.name.toLowerCase().endsWith('.csv')) {
+            const lines = text.split('\n');
+            lines.forEach((line, idx) => {
+                if (idx === 0) return;
+                const cols = line.split(',');
+                const msg = cols.find(c => /mpesa|confirmed/i.test(c));
+                if (msg) messages.push(msg.trim().replace(/^"|"$/g, ''));
+            });
+        } else {
+            messages = text.split('\n').filter(line => line.trim());
+        }
+
+        await processMessages(messages);
+    };
+
+    reader.readAsText(file);
 }
 
-function exportToExcel(){ /* unchanged */ }
+function exportToExcel() {
+    if (transactions.length === 0) {
+        alert('No transactions to export');
+        return;
+    }
 
-function generateReport(){ /* unchanged */ }
+    const data = transactions.map(t => ({
+        'Date': t.transaction_date ? new Date(t.transaction_date).toLocaleDateString('en-GB') : '-',
+        'Type': t.transaction_type ? t.transaction_type.charAt(0).toUpperCase() + t.transaction_type.slice(1) : '-',
+        'Sender': t.sender_name || '-',
+        'Amount (KSh)': Number(t.amount || 0).toFixed(2),
+        'Code': t.transaction_code || 'N/A',
+        'Balance (KSh)': t.balance ? Number(t.balance).toFixed(2) : 'N/A',
+        'Raw SMS': t.raw_sms || ''
+    }));
 
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'M-Pesa Transactions');
+    XLSX.writeFile(wb, 'mpesa_export_' + new Date().toISOString().split('T')[0] + '.xlsx');
+}
+
+function generateReport() {
+    alert('Advanced report coming soon! Use Export to Excel for now.');
+}
+
+async function logout() {
+    if (confirm('Logout?')) {
+        await sb.auth.signOut();
+        localStorage.removeItem('mpesa_current_user');
+        window.location.href = 'index.html';
+    }
+}
+
+// Optional: Add delete button for testing
+async function clearMyTransactions() {
+    if (!confirm('Delete ALL your transactions? This cannot be undone!')) return;
+
+    const statusEl = document.getElementById('importStatus') || document.createElement('div');
+    statusEl.textContent = 'Deleting...';
+    statusEl.className = 'error';
+
+    const { error } = await sb.from('mpesa_transactions').delete().eq('user_id', currentUser.id);
+
+    if (error) {
+        statusEl.textContent = 'Delete failed: ' + error.message;
+    } else {
+        statusEl.textContent = 'All transactions deleted!';
+        statusEl.className = 'success';
+        await loadTransactions();
+        updateDashboard();
+    }
+
+    setTimeout(() => { statusEl.textContent = ''; statusEl.className = ''; }, 5000);
+}
 </script>
 </body>
 </html>

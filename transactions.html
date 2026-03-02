@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transactions - M-Pesa Tracker</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #16a34a 75%, #059669 100%);
             min-height: 100vh;
         }
-        
         .navbar {
             background: rgba(255, 255, 255, 0.95);
             padding: 1rem 5%;
@@ -22,7 +22,6 @@
             align-items: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
         .logo {
             font-size: 1.8rem;
             font-weight: bold;
@@ -31,21 +30,17 @@
             -webkit-text-fill-color: transparent;
             text-decoration: none;
         }
-        
         .nav-links {
             display: flex;
             gap: 2rem;
             list-style: none;
         }
-        
         .nav-links a {
             text-decoration: none;
             color: #374151;
             font-weight: 500;
         }
-        
         .nav-links a:hover { color: #16a34a; }
-        
         .btn {
             padding: 0.75rem 1.5rem;
             border: none;
@@ -57,24 +52,20 @@
             text-decoration: none;
             display: inline-block;
         }
-        
         .btn-success {
             background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
             color: white;
         }
-        
         .btn-secondary {
             background: white;
             color: #374151;
             border: 2px solid #e5e7eb;
         }
-        
         .dashboard-container {
             padding: 2rem 5%;
             max-width: 1400px;
             margin: 0 auto;
         }
-        
         .dashboard-header {
             display: flex;
             justify-content: space-between;
@@ -83,12 +74,10 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
-        
         .dashboard-header h1 {
             color: white;
             font-size: 2rem;
         }
-        
         .content-card {
             background: white;
             padding: 2rem;
@@ -96,19 +85,16 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
         }
-        
         .content-card h2 {
             color: #374151;
             margin-bottom: 1.5rem;
         }
-        
         .filters {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
-        
         .filters input,
         .filters select {
             padding: 0.75rem;
@@ -116,18 +102,15 @@
             border-radius: 8px;
             font-size: 1rem;
         }
-        
         .filters input:focus,
         .filters select:focus {
             outline: none;
             border-color: #16a34a;
         }
-        
         table {
             width: 100%;
             border-collapse: collapse;
         }
-        
         th {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(22, 163, 74, 0.1) 100%);
             padding: 1rem;
@@ -135,33 +118,33 @@
             font-weight: 600;
             color: #374151;
         }
-        
         td {
             padding: 1rem;
             border-bottom: 1px solid #e5e7eb;
         }
-        
         tr:hover {
             background: #f9fafb;
         }
-        
         .badge {
             padding: 0.25rem 0.75rem;
             border-radius: 999px;
             font-size: 0.875rem;
             font-weight: 500;
         }
-        
         .badge-sent {
             background: #fee2e2;
             color: #991b1b;
         }
-        
         .badge-received {
             background: #dcfce7;
             color: #166534;
         }
-        
+        #loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
         @media (max-width: 768px) {
             .nav-links { display: none; }
             table { font-size: 0.875rem; }
@@ -179,17 +162,15 @@
         </ul>
         <button class="btn btn-secondary" onclick="logout()">Logout</button>
     </nav>
-
     <div class="dashboard-container">
         <div class="dashboard-header">
             <h1>All Transactions</h1>
             <a href="dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
         </div>
-
         <div class="content-card">
             <h2>Search & Filter</h2>
             <div class="filters">
-                <input type="text" id="searchPerson" placeholder="Search by person..." oninput="applyFilters()">
+                <input type="text" id="searchPerson" placeholder="Search by sender..." oninput="applyFilters()">
                 <input type="date" id="startDate" onchange="applyFilters()">
                 <input type="date" id="endDate" onchange="applyFilters()">
                 <select id="typeFilter" onchange="applyFilters()">
@@ -202,106 +183,142 @@
             </div>
             <button class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
         </div>
-
         <div class="content-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
                 <h2>Transaction List (<span id="transactionCount">0</span>)</h2>
                 <button class="btn btn-success" onclick="exportToExcel()">📥 Export</button>
             </div>
-            <div style="overflow-x: auto;">
+            <div id="loading">Loading transactions...</div>
+            <div style="overflow-x: auto; display: none;" id="tableContainer">
                 <table id="transactionsTable">
                     <thead>
                         <tr>
                             <th>Date</th>
                             <th>Type</th>
-                            <th>Person</th>
+                            <th>Sender</th>
                             <th>Amount (KSh)</th>
                             <th>Code</th>
                             <th>Balance (KSh)</th>
                         </tr>
                     </thead>
-                    <tbody id="transactionsBody">
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 3rem; color: #6b7280;">
-                                No transactions yet. Import M-Pesa messages to get started.
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody id="transactionsBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <script>
-        var transactions = [];
-        var filteredTransactions = [];
+        const { createClient } = supabase;
+        const sb = createClient(
+            'https://umkvvazozqpyzpfgunox.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVta3Z2YXpvenFweXpwZmd1bm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODg3NDcsImV4cCI6MjA4Nzk2NDc0N30.ZIfiXBJtd01vnLsZjsGcNM4sA4Jsvp6pYR85xaOL4JA'
+        );
 
-        window.onload = function() {
-            checkAuth();
-            loadTransactions();
-            updateTransactionsTable();
+        let currentUser = null;
+        let transactions = [];
+        let filteredTransactions = [];
+
+        window.onload = async function() {
+            await loadUser();
+            if (currentUser) {
+                await loadTransactions();
+                updateTransactionsTable();
+            }
         };
 
-        function checkAuth() {
-            var saved = localStorage.getItem('mpesa_current_user');
-            if (!saved) {
+        async function loadUser() {
+            const { data: { user }, error: authError } = await sb.auth.getUser();
+            if (authError || !user) {
                 alert('Please login first');
                 window.location.href = 'login.html';
+                return;
             }
+
+            const { data: profile, error: profileError } = await sb
+                .from('users')
+                .select('id, full_name, email, created_at')
+                .eq('email', user.email)
+                .single();
+
+            if (profileError || !profile) {
+                console.error('Profile fetch error:', profileError);
+                alert('Could not load user profile. Please try logging in again.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            currentUser = {
+                id: profile.id,
+                name: profile.full_name,
+                email: profile.email,
+                createdAt: profile.created_at
+            };
         }
 
-        function logout() {
-            localStorage.removeItem('mpesa_current_user');
-            window.location.href = 'index.html';
-        }
+        async function loadTransactions() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('tableContainer').style.display = 'none';
 
-        function loadTransactions() {
-            var saved = localStorage.getItem('mpesa_transactions');
-            if (saved) {
-                transactions = JSON.parse(saved);
-                filteredTransactions = transactions.slice();
+            const { data, error } = await sb
+                .from('mpesa_transactions')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('transaction_date', { ascending: false });
+
+            if (error) {
+                console.error('Transactions fetch error:', error);
+                document.getElementById('loading').textContent = 'Error loading transactions: ' + error.message;
+                return;
             }
+
+            transactions = data || [];
+            filteredTransactions = transactions.slice();
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('tableContainer').style.display = 'block';
+            updateTransactionsTable();
         }
 
         function updateTransactionsTable() {
-            var tbody = document.getElementById('transactionsBody');
+            const tbody = document.getElementById('transactionsBody');
             document.getElementById('transactionCount').textContent = filteredTransactions.length;
-            
+
             if (filteredTransactions.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 3rem; color: #6b7280;">No transactions found</td></tr>';
                 return;
             }
-            
+
             tbody.innerHTML = filteredTransactions.map(function(t) {
                 return '<tr>' +
-                    '<td>' + t.date + '</td>' +
-                    '<td><span class="badge badge-' + t.type + '">' + (t.type.charAt(0).toUpperCase() + t.type.slice(1)) + '</span></td>' +
-                    '<td>' + t.person + '</td>' +
-                    '<td>' + t.amount.toFixed(2) + '</td>' +
-                    '<td>' + (t.code || '-') + '</td>' +
-                    '<td>' + (t.balance ? t.balance.toFixed(2) : '-') + '</td>' +
+                    '<td>' + (t.transaction_date ? new Date(t.transaction_date).toLocaleDateString('en-GB') : '-') + '</td>' +
+                    '<td><span class="badge badge-' + (t.transaction_type || 'other') + '">' + 
+                        (t.transaction_type ? t.transaction_type.charAt(0).toUpperCase() + t.transaction_type.slice(1) : 'Other') + '</span></td>' +
+                    '<td>' + (t.sender_name || '-') + '</td>' +
+                    '<td>' + Number(t.amount || 0).toFixed(2) + '</td>' +
+                    '<td>' + (t.transaction_code || '-') + '</td>' +
+                    '<td>' + (t.balance ? Number(t.balance).toFixed(2) : '-') + '</td>' +
                 '</tr>';
             }).join('');
         }
 
         function applyFilters() {
-            var person = document.getElementById('searchPerson').value.toLowerCase();
-            var startDate = document.getElementById('startDate').value;
-            var endDate = document.getElementById('endDate').value;
-            var type = document.getElementById('typeFilter').value;
-            var code = document.getElementById('searchCode').value.toUpperCase();
-            var minAmount = parseFloat(document.getElementById('minAmount').value) || 0;
-            
-            filteredTransactions = transactions.filter(function(t) {
-                if (person && t.person.toLowerCase().indexOf(person) === -1) return false;
-                if (startDate && t.date < startDate) return false;
-                if (endDate && t.date > endDate) return false;
-                if (type !== 'all' && t.type !== type) return false;
-                if (code && (!t.code || t.code.indexOf(code) === -1)) return false;
-                if (minAmount && t.amount < minAmount) return false;
+            const person = document.getElementById('searchPerson').value.toLowerCase().trim();
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const type = document.getElementById('typeFilter').value;
+            const code = document.getElementById('searchCode').value.toUpperCase().trim();
+            const minAmount = parseFloat(document.getElementById('minAmount').value) || 0;
+
+            filteredTransactions = transactions.filter(t => {
+                if (person && (!t.sender_name || !t.sender_name.toLowerCase().includes(person))) return false;
+                if (startDate && t.transaction_date < startDate) return false;
+                if (endDate && t.transaction_date > endDate) return false;
+                if (type !== 'all' && t.transaction_type?.toLowerCase() !== type) return false;
+                if (code && (!t.transaction_code || !t.transaction_code.toUpperCase().includes(code))) return false;
+                if (minAmount && Number(t.amount) < minAmount) return false;
                 return true;
             });
-            
+
             updateTransactionsTable();
         }
 
@@ -321,23 +338,28 @@
                 alert('No transactions to export');
                 return;
             }
-            
-            var data = filteredTransactions.map(function(t) {
-                return {
-                    'Date': t.date,
-                    'Type': t.type.charAt(0).toUpperCase() + t.type.slice(1),
-                    'Person': t.person,
-                    'Amount (KSh)': t.amount.toFixed(2),
-                    'Transaction Code': t.code || 'N/A',
-                    'Balance (KSh)': t.balance ? t.balance.toFixed(2) : 'N/A'
-                };
-            });
-            
-            var ws = XLSX.utils.json_to_sheet(data);
-            var wb = XLSX.utils.book_new();
+
+            const data = filteredTransactions.map(t => ({
+                'Date': t.transaction_date ? new Date(t.transaction_date).toLocaleDateString('en-GB') : '-',
+                'Type': t.transaction_type ? t.transaction_type.charAt(0).toUpperCase() + t.transaction_type.slice(1) : '-',
+                'Sender': t.sender_name || '-',
+                'Amount (KSh)': Number(t.amount || 0).toFixed(2),
+                'Transaction Code': t.transaction_code || 'N/A',
+                'Balance (KSh)': t.balance ? Number(t.balance).toFixed(2) : 'N/A'
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
-            
             XLSX.writeFile(wb, 'mpesa_transactions_' + new Date().toISOString().split('T')[0] + '.xlsx');
+        }
+
+        async function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                await sb.auth.signOut();
+                localStorage.removeItem('mpesa_current_user');
+                window.location.href = 'landing.html';
+            }
         }
     </script>
 </body>
